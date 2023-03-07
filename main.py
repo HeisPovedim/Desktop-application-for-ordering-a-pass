@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
     # создаем новое окно и задаем его фиксированный размер
     new_window = QMainWindow(self)
     new_window.setFixedSize(600, 400)
-
+  
     # создаем кнопку назад и привязываем к ней событие нажатия
     back_button = QPushButton("Назад", new_window)
     back_button.move(260, 200)
