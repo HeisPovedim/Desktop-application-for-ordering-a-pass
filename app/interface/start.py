@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
 
     # создаем лейблы для каждой картинки и подписи
     self.label1 = QLabel(widget)
-    self.label1.setPixmap(QPixmap("../img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
+    self.label1.setPixmap(QPixmap("./img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
     self.label1.move(25, 50)
     self.caption1 = QLabel("Личное посещение", widget)
     self.caption1.move(105, 315)
