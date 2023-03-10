@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
     
   # задаем фиксированный размер главного окна и его заголовок
     self.setWindowTitle("IDVisitor")
-    self.setWindowIcon(QIcon("../img/icon.png"))
+    self.setWindowIcon(QIcon("./img/icon.png"))
     self.setFixedSize(600, 400)
 
     # создаем виджет, на котором будут расположены картинки и подписи
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     self.caption1.move(105, 315)
 
     self.label2 = QLabel(widget)
-    self.label2.setPixmap(QPixmap("../img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
+    self.label2.setPixmap(QPixmap("./img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
     self.label2.move(325, 50)
     self.caption2 = QLabel("Групповое посещение", widget)
     self.caption2.move(405, 315)

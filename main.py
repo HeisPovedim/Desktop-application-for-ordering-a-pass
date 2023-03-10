@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
   QApplication, QLabel, QMainWindow, QPushButton, QWidget, QGridLayout, QGroupBox, QFormLayout, QDateEdit, QWidget,
   QSizePolicy, QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QDialog, QVBoxLayout, QHBoxLayout, QMessageBox
 )
-from helpers.capitalize_text import capitalize_text
+from app.helpers.capitalize_text import capitalize_text
 
 class MainWindow(QMainWindow):
   def __init__(self):
@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
 
     # задаем фиксированный размер главного окна и его заголовок
     self.setWindowTitle("IDVisitor")
-    self.setWindowIcon(QIcon("./img/icon.png"))
+    self.setWindowIcon(QIcon("./app/img/icon.png"))
     self.setFixedSize(600, 400)
 
     # создаем виджет, на котором будут расположены картинки и подписи
@@ -22,13 +22,13 @@ class MainWindow(QMainWindow):
 
     # создаем лейблы для каждой картинки и подписи
     label1 = QLabel(widget)
-    label1.setPixmap(QPixmap("./img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
+    label1.setPixmap(QPixmap("./app/img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
     label1.move(25, 50)
     caption1 = QLabel("Личное посещение", widget)
     caption1.move(105, 315)
 
     label2 = QLabel(widget)
-    label2.setPixmap(QPixmap("./img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
+    label2.setPixmap(QPixmap("./app/img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
     label2.move(325, 50)
     caption2 = QLabel("Групповое посещение", widget)
     caption2.move(405, 315)
