@@ -1,4 +1,3 @@
-import sys
 from PyQt6.QtCore import Qt, QDate, QRegularExpression
 from PyQt6.QtGui import QPixmap, QIcon, QRegularExpressionValidator
 from PyQt6.QtWidgets import (
@@ -7,40 +6,12 @@ from PyQt6.QtWidgets import (
 )
 from helpers.capitalize_text import capitalize_text
 
-class MainWindow(QMainWindow):
-  def __init__(self):
+class PersonalWindow(QMainWindow):
+  def __init__(self,start_window):
     super().__init__()
-
-    # задаем фиксированный размер главного окна и его заголовок
-    self.setWindowTitle("IDVisitor")
-    self.setWindowIcon(QIcon("./img/icon.png"))
-    self.setFixedSize(600, 400)
-
-    # создаем виджет, на котором будут расположены картинки и подписи
-    widget = QWidget(self)
-    self.setCentralWidget(widget)
-
-    # создаем лейблы для каждой картинки и подписи
-    label1 = QLabel(widget)
-    label1.setPixmap(QPixmap("./img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
-    label1.move(25, 50)
-    caption1 = QLabel("Личное посещение", widget)
-    caption1.move(105, 315)
-
-    label2 = QLabel(widget)
-    label2.setPixmap(QPixmap("./img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
-    label2.move(325, 50)
-    caption2 = QLabel("Групповое посещение", widget)
-    caption2.move(405, 315)
-
-    # привязываем к лейблам события нажатия на них
-    label1.mousePressEvent = lambda event: self.individual_visit_window()
-    label2.mousePressEvent = lambda event: self.group_visit_window()
-
-  # #: ОКНО ИНДИВИДУАЛЬНОГО ПОСЕЩЕНИЯ
-  def individual_visit_window(self):
     
     # ?: создаем новое окно и задаем ему фиксированный размер с заголовком
+    self.start_window = start_window
     new_window = QMainWindow(self)
     new_window.setWindowTitle("IDVisitor")
     new_window.setFixedSize(1000, 700)
@@ -210,37 +181,11 @@ class MainWindow(QMainWindow):
     # показываем новое окно
     new_window.show()
     self.hide()
-
-  # #: ОКНО ГРУППОВГО ПОСЕЩЕНИЯ
-  def group_visit_window(self):
-    # создаем новое окно и задаем его фиксированный размер
-    new_window = QMainWindow(self)
-    new_window.setFixedSize(600, 400)
-  
-    # создаем кнопку назад и привязываем к ней событие нажатия
-    back_button = QPushButton("Назад", new_window)
-    back_button.move(260, 200)
-    back_button.clicked.connect(lambda: self.show_main_window(new_window))
-
-    # привязываем к новому окну событие закрытия окна
-    new_window.closeEvent = lambda: self.show_main_window(new_window)
-
-    # показываем новое окно
-    new_window.show()
-    self.hide()
-
-  # #: ЗАКРЫТИЕ НОВОГО ОКНА И ОТКРЫТИЕ ГЛАВНОГО
-  def show_main_window(self, new_window):
-    # показываем главное окно и закрываем новое окно
-    new_window.hide()
-    self.show()
-
-  # #: ОТОБРАЖЕНИЕ ДИАЛОГОВОГО ОКНА ВЫБОРА ФАЙЛОВ
-  def show_file_dialog(self):
-    file_names, _ = QFileDialog.getOpenFileNames(self, "Выберите файлы", "", "All Files (*);;Text Files (*.txt)")
-    self.attachedDocuments_selectedАilesLbl.setText("Выбранные файлы: " + ", ".join(file_names)) # отображение выбранных файлов в метке
     
-  # #: ОТКРЫТИЕ ДИАЛОГОВОГО ОКНА ДЛЯ ВЫБОРА ФАЙЛА
+  def update_max_date(self):
+    self.infoForThePassDate_editAbout.setMinimumDate(self.infoForThePassDate_editWith.date())
+    self.infoForThePassDate_editAbout.setMaximumDate(self.infoForThePassDate_editWith.date().addDays(15))
+  
   def load_image(self):
     file_name, _ = QFileDialog.getOpenFileName(self, "Выберите изображение", "", "Image Files (*.jpg *.png)")
     if file_name:
@@ -248,19 +193,14 @@ class MainWindow(QMainWindow):
       image = QPixmap(file_name)
       self.attachedPhoto__photo.setPixmap(image)
       self.attachedPhoto__photo.setScaledContents(True)
-      
-  # #: ОБНОВЛЕНИЕ ТЕКУЩЕЙ ДАТЫ НА 15 ДНЕЙ ВПЕРЕД
-  def update_max_date(self):
-    self.infoForThePassDate_editAbout.setMinimumDate(self.infoForThePassDate_editWith.date())
-    self.infoForThePassDate_editAbout.setMaximumDate(self.infoForThePassDate_editWith.date().addDays(15))
     
-  # # ФУНКЦИЯ ОБРАБОТКИ ФОРМЫ
-  def make_application(self):
-    pass
-  
-# #: ВЫЗОВ КОДА ТОЛЬКО В ЭТОМ ФАЙЛЕ ЕСЛИ ОН ЯВЛЯЕТСЯ ИСПОЛНЯЕМЫМ
-if __name__ == "__main__":
-  app = QApplication(sys.argv)
-  main_window = MainWindow()
-  main_window.show()
-  sys.exit(app.exec())
+    # #: ОТОБРАЖЕНИЕ ДИАЛОГОВОГО ОКНА ВЫБОРА ФАЙЛОВ
+  def show_file_dialog(self):
+    file_names, _ = QFileDialog.getOpenFileNames(self, "Выберите файлы", "", "All Files (*);;Text Files (*.txt)")
+    self.attachedDocuments_selectedАilesLbl.setText("Выбранные файлы: " + ", ".join(file_names)) # отображение выбранных файлов в метке
+    
+    # #: ЗАКРЫТИЕ НОВОГО ОКНА И ОТКРЫТИЕ ГЛАВНОГО
+  def show_main_window(self, new_window):
+    # показываем главное окно и закрываем новое окно
+    new_window.hide()
+    self.start_window.show()

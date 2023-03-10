@@ -1,7 +1,8 @@
 import sys
-from PyQt6.QtCore import Qt, QDate
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt, QDate, QRegularExpression
+from PyQt6.QtGui import QPixmap, QIcon, QRegularExpressionValidator
 from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow, QPushButton, QWidget, QGridLayout, QGroupBox, QFormLayout, QDateEdit, QWidget, QSizePolicy, QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QDialog, QVBoxLayout, QHBoxLayout
+from helpers.capitalize_text import capitalize_text
 
 class MainWindow(QMainWindow):
   def __init__(self):
@@ -9,6 +10,7 @@ class MainWindow(QMainWindow):
 
     # задаем фиксированный размер главного окна и его заголовок
     self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon("./img/icon.png"))
     self.setFixedSize(600, 400)
 
     # создаем виджет, на котором будут расположены картинки и подписи
@@ -47,29 +49,33 @@ class MainWindow(QMainWindow):
     infoForThePass__grid.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft) # выравнивание сетки
     infoForThePass__groupBox.setLayout(infoForThePass__grid)                                  # добавление формы в групповой блок
     
-    infoForThePassDate_editWith = QDateEdit(infoForThePass__groupBox) # создание поля с датой "с*"
-    infoForThePassDate_editWith.setFixedWidth(150)                    # фиксация ширины поля
-    infoForThePassDate_editWith.setCalendarPopup(True)                # включение календаря
-    infoForThePassDate_editWith.setMinimumDate(QDate.currentDate())   # установка текущей даты
+    self.infoForThePassDate_editWith = QDateEdit(infoForThePass__groupBox) # создание поля с датой "с*"
+    self.infoForThePassDate_editWith.setFixedWidth(150)                    # фиксация ширины поля
+    self.infoForThePassDate_editWith.setCalendarPopup(True)                # включение календаря
+    self.infoForThePassDate_editWith.setMinimumDate(QDate.currentDate())
+    self.infoForThePassDate_editWith.setMaximumDate(QDate.currentDate().addDays(15))
     
-    infoForThePassDate_editAbout = QDateEdit(infoForThePass__groupBox) # создание поля с датой "по"
-    infoForThePassDate_editAbout.setFixedWidth(150)                    # фиксация ширины поля
-    infoForThePassDate_editAbout.setCalendarPopup(True)                # включение календаря
-    infoForThePassDate_editAbout.setMinimumDate(QDate.currentDate())   # установка текущей даты
+    self.infoForThePassDate_editAbout = QDateEdit(infoForThePass__groupBox) # создание поля с датой "по"
+    self.infoForThePassDate_editAbout.setFixedWidth(150)                    # фиксация ширины поля
+    self.infoForThePassDate_editAbout.setCalendarPopup(True)                # включение календаря
+    self.infoForThePassDate_editAbout.setMinimumDate(self.infoForThePassDate_editWith.date())
+    self.infoForThePassDate_editAbout.setMaximumDate(self.infoForThePassDate_editWith.date().addDays(15))
     
-    infoForThePass__comboBox = QComboBox()                                                  # строка выбора "Цель посещения"
+    self.infoForThePassDate_editWith.dateChanged.connect(self.update_max_date) # обновление даты после её выбора
+    
+    infoForThePass__comboBox = QComboBox() # строка выбора "Цель посещения"
     infoForThePass__comboBox.addItems(["Ознакомление", "Экскурсия", "Мне просто спросить"]) # добавление списка из состоящего из массива
     
-    infoForThePass__QHBoxLayout = QHBoxLayout()                         # создание группового горинзотального блока
-    infoForThePass__QHBoxLayout.addWidget(QLabel("c*"))                 # добавление в блок
-    infoForThePass__QHBoxLayout.addWidget(infoForThePassDate_editWith)  # добавление в блок
-    infoForThePass__QHBoxLayout.addWidget(QLabel("по*"))                # добавление в блок
-    infoForThePass__QHBoxLayout.addWidget(infoForThePassDate_editAbout) # добавление в блок
+    infoForThePass__QHBoxLayout = QHBoxLayout()                              # создание группового горинзотального блока
+    infoForThePass__QHBoxLayout.addWidget(QLabel("c"))                       # добавление в блок
+    infoForThePass__QHBoxLayout.addWidget(self.infoForThePassDate_editWith)  # добавление в блок
+    infoForThePass__QHBoxLayout.addWidget(QLabel("по"))                      # добавление в блок
+    infoForThePass__QHBoxLayout.addWidget(self.infoForThePassDate_editAbout) # добавление в блок
     
-    infoForThePass__grid.addWidget(QLabel("Срок действия заявки:"), 0, 0) # 1-я строка
-    infoForThePass__grid.addLayout(infoForThePass__QHBoxLayout, 1, 0)     # 2-я строка
-    infoForThePass__grid.addWidget(QLabel("Цель посещения:"), 2, 0)       # 3-я строка
-    infoForThePass__grid.addWidget(infoForThePass__comboBox, 3, 0)        # 4-я строка
+    infoForThePass__grid.addWidget(QLabel("Срок действия заявки*:"), 0, 0) # 1-я строка
+    infoForThePass__grid.addLayout(infoForThePass__QHBoxLayout, 1, 0)      # 2-я строка
+    infoForThePass__grid.addWidget(QLabel("Цель посещения*:"), 2, 0)       # 3-я строка
+    infoForThePass__grid.addWidget(infoForThePass__comboBox, 3, 0)         # 4-я строка
     
     # @: создаем форму => Принимающая сторона
     receivingParty__groupBox = QGroupBox("Принимающая сторона")  # создаем групповой блок
@@ -81,13 +87,15 @@ class MainWindow(QMainWindow):
     receivingParty__comboBox.addItems(["ТКМП", "ЮФУ", "ГИБДД"]) # добавление списка из состоящего из массива
     
     receivingParty_FIO = QLineEdit() # строка ввода фамилии
+    receivingParty_FIO.setValidator(QRegularExpressionValidator(QRegularExpression("[А-Яа-я ]+")))
     
     receivingParty__grid.addWidget(QLabel("Подразделение*:"), 0, 0) # 1-я строка
     receivingParty__grid.addWidget(receivingParty__comboBox, 1, 0)  # 2-я строка
     receivingParty__grid.addWidget(QLabel("ФИО*:"), 2, 0)           # 3-я строка
-    receivingParty__grid.addWidget(receivingParty_FIO, 3, 0)        # 4-я строка
-
-
+    receivingParty__grid.addWidget(receivingParty_FIO, 3, 0)   # 4-я строка
+    
+    receivingParty_FIO.textEdited.connect(capitalize_text)
+    
     # @: создаем форму => Информация о посетителе
     visitorInformation__groupBox = QGroupBox("Информация о посетителе") # создаем групповой блок
     visitorInformation__grid = QGridLayout()                            # создание сетки
@@ -146,8 +154,8 @@ class MainWindow(QMainWindow):
     visitorInformation__grid.addWidget(QLabel("Номер:"), 4, 2)
     visitorInformation__number = QLineEdit()
     visitorInformation__grid.addWidget(visitorInformation__number, 4, 3)
-    # окно с картинкой и кнопкой загрузить фотографию
-    visitorInformation__grid.addLayout(attachedPhoto__QVBoxLayout, 0, 4, 4, 1)
+    # блок с фотографией
+    visitorInformation__grid.addLayout(attachedPhoto__QVBoxLayout, 0, 4, 6, 1)
     
     # @: создаем форму => Прикрепляемые документы
     attachedDocuments__groupBox = QGroupBox("Прикрепляемые документы")   # создаем групповой блок
@@ -171,7 +179,7 @@ class MainWindow(QMainWindow):
     # создаем кнопку далее и привязываем к ней событие нажатия
     further_button = QPushButton("Оформить заявку", new_window)
     further_button.setFixedWidth(120)
-    # further_button.clicked.connect(lambda: self.show_main_window(new_window)) ! ТУТ ДОПИСАТЬ
+    further_button.clicked.connect(lambda: self.make_application(new_window))
     
     # объединение кнопок в один горизонтальный блок
     buttons = QHBoxLayout()
@@ -205,7 +213,7 @@ class MainWindow(QMainWindow):
     # создаем новое окно и задаем его фиксированный размер
     new_window = QMainWindow(self)
     new_window.setFixedSize(600, 400)
-
+  
     # создаем кнопку назад и привязываем к ней событие нажатия
     back_button = QPushButton("Назад", new_window)
     back_button.move(260, 200)
@@ -237,7 +245,12 @@ class MainWindow(QMainWindow):
       image = QPixmap(file_name)
       self.attachedPhoto__photo.setPixmap(image)
       self.attachedPhoto__photo.setScaledContents(True)
-
+      
+  # #: ОБНОВЛЕНИЕ ТЕКУЩЕЙ ДАТЫ НА 15 ДНЕЙ ВПЕРЕД
+  def update_max_date(self):
+    self.infoForThePassDate_editAbout.setMinimumDate(self.infoForThePassDate_editWith.date())
+    self.infoForThePassDate_editAbout.setMaximumDate(self.infoForThePassDate_editWith.date().addDays(15))
+    
 # #: ВЫЗОВ КОДА ТОЛЬКО В ЭТОМ ФАЙЛЕ
 if __name__ == "__main__":
   app = QApplication(sys.argv)
