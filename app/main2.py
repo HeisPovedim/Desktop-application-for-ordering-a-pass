@@ -6,9 +6,6 @@ from PyQt6.QtWidgets import (
 )
 from helpers.capitalize_text import capitalize_text
 from interface.start import MainWindow
-
-
-    
     
     # #: ВЫЗОВ КОДА ТОЛЬКО В ЭТОМ ФАЙЛЕ ЕСЛИ ОН ЯВЛЯЕТСЯ ИСПОЛНЯЕМЫМ
 if __name__ == "__main__":
