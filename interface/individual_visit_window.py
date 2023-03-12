@@ -1,16 +1,22 @@
 from PyQt6.QtCore import Qt, QDate, QRegularExpression
-from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
+from PyQt6.QtGui import QPixmap, QRegularExpressionValidator, QGuiApplication
 from PyQt6.QtWidgets import (
   QLabel, QMainWindow, QPushButton, QGridLayout, QGroupBox, QFormLayout, QDateEdit, QWidget,
   QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QVBoxLayout, QMessageBox
 )
 from helpers.capitalize_text import capitalize_text
 import dns.resolver
-
+import re
 
 class PersonalWindow(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
+    self.visitor_information__number = None
+    self.visitor_information__patronymic = None
+    self.visitor_information__note = None
+    self.visitor_information__organization = None
+    self.visitor_information__series = None
+    self.visitor_information__name = None
     self.visitor_information__surname = None
     self.receiving_party_fio = None
     self.visitor_information__email = None
@@ -116,27 +122,27 @@ class PersonalWindow(QMainWindow):
     )
     visitor_information__grid.addWidget(self.visitor_information__surname, 0, 1)
     visitor_information__grid.addWidget(QLabel("Организация:"), 0, 2)
-    visitor_information__organization = QLineEdit()
-    visitor_information__grid.addWidget(visitor_information__organization, 0, 3)
+    self.visitor_information__organization = QLineEdit()
+    visitor_information__grid.addWidget(self.visitor_information__organization, 0, 3)
     # 2-я строка
     visitor_information__grid.addWidget(QLabel("Имя*:"), 1, 0)
-    visitor_information__name = QLineEdit()
-    visitor_information__name.setMaxLength(25)
-    visitor_information__name.textEdited.connect(
-      lambda: visitor_information__name.setText(capitalize_text("Other", visitor_information__name.text()))
+    self.visitor_information__name = QLineEdit()
+    self.visitor_information__name.setMaxLength(25)
+    self.visitor_information__name.textEdited.connect(
+      lambda: self.visitor_information__name.setText(capitalize_text("Other", self.visitor_information__name.text()))
     )
-    visitor_information__grid.addWidget(visitor_information__name, 1, 1)
+    visitor_information__grid.addWidget(self.visitor_information__name, 1, 1)
     visitor_information__grid.addWidget(QLabel("Примечание*:"), 1, 2)
-    visitor_information__note = QLineEdit()
-    visitor_information__grid.addWidget(visitor_information__note, 1, 3)
+    self.visitor_information__note = QLineEdit()
+    visitor_information__grid.addWidget(self.visitor_information__note, 1, 3)
     # 3-я строка
     visitor_information__grid.addWidget(QLabel("Отчество*:"), 2, 0)
-    visitor_information__patronymic = QLineEdit()
-    visitor_information__patronymic.setMaxLength(25)
-    visitor_information__patronymic.textEdited.connect(
-      lambda: visitor_information__patronymic.setText(capitalize_text("Other", visitor_information__patronymic.text()))
+    self.visitor_information__patronymic = QLineEdit()
+    self.visitor_information__patronymic.setMaxLength(25)
+    self.visitor_information__patronymic.textEdited.connect(
+      lambda: self.visitor_information__patronymic.setText(capitalize_text("Other", self.visitor_information__patronymic.text()))
     )
-    visitor_information__grid.addWidget(visitor_information__patronymic , 2, 1)
+    visitor_information__grid.addWidget(self.visitor_information__patronymic , 2, 1)
     visitor_information__grid.addWidget(QLabel("Дата рождения:"), 2, 2)
     visitor_information_edit_with = QDateEdit()
     visitor_information_edit_with.setMaximumDate(QDate.currentDate().addYears(-16))
@@ -148,17 +154,20 @@ class PersonalWindow(QMainWindow):
     visitor_information__phone.setInputMask('+7 (999) 999-99-99')
     visitor_information__grid.addWidget(visitor_information__phone, 3, 1)
     visitor_information__grid.addWidget(QLabel("Серия паспорта*:"), 3, 2)
-    visitor_information__series = QLineEdit()
-    visitor_information__series.setMaxLength(4)
-    visitor_information__grid.addWidget(visitor_information__series, 3, 3)
+    self.visitor_information__series = QLineEdit()
+    self.visitor_information__series.setMaxLength(4)
+    visitor_information__grid.addWidget(self.visitor_information__series, 3, 3)
     # 5-я строка
     visitor_information__grid.addWidget(QLabel("E-mail*:"), 4, 0)
     self.visitor_information__email = QLineEdit()
+    self.visitor_information__email.setValidator(QRegularExpressionValidator(
+      QRegularExpression(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    ))
     visitor_information__grid.addWidget(self.visitor_information__email, 4, 1)
     visitor_information__grid.addWidget(QLabel("Номер паспорта*:"), 4, 2)
-    visitor_information__number = QLineEdit()
-    visitor_information__number.setMaxLength(6)
-    visitor_information__grid.addWidget(visitor_information__number, 4, 3)
+    self.visitor_information__number = QLineEdit()
+    self.visitor_information__number.setMaxLength(6)
+    visitor_information__grid.addWidget(self.visitor_information__number, 4, 3)
     # блок с фотографией
     visitor_information__grid.addLayout(attached_photo__qvbox_layout, 0, 4, 6, 1)
     
@@ -228,35 +237,77 @@ class PersonalWindow(QMainWindow):
   def make_application(self):
     print("Работает")
     blank_fields = [] # массив, куда мы будем записывать наши не записанные поля
+    form_valid = True
     
     # ФИО валидация
     fio = self.receiving_party_fio.text()
     if fio == "":
       blank_fields.append("ФИО")
+      form_valid = False
       
     # Фамилия валидация
     surname = self.visitor_information__surname.text()
     if surname == "":
       blank_fields.append("Фамилия")
+      form_valid = False
+    
+    # Имя валидация
+    name = self.visitor_information__name.text()
+    if name == "":
+      blank_fields.append("Имя")
+      form_valid = False
+    
+    # Отчество валидация
+    patronymic = self.visitor_information__patronymic.text()
+    if patronymic == "":
+      blank_fields.append("Отчество")
+      form_valid = False
     
     # E-mail валидация
     email = self.visitor_information__email.text().strip()
     domain = email.split('@')[-1]
-    
-    if email == "":
+    if re.fullmatch(re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
       blank_fields.append("Email")
+      form_valid = False
     else:
       # получаем MX записи домена
       try:
         answers = dns.resolver.resolve(domain, 'MX')
       except dns.resolver.NXDOMAIN:
-        QMessageBox.warning(self, 'Validation', 'No MX records found for domain')
-        return
+        # QMessageBox.warning(self, 'Валидация', 'Не найдено записей MX для домена')
+        blank_fields.append("Email")
+        form_valid = False
+        answers = 0
+        # return
+      
       # проверяем, есть ли хотя бы один адрес сервера в ответе
-      if len(answers) > 0:
-        QMessageBox.information(self, 'Validation', 'Email is valid')
-      else:
-        QMessageBox.warning(self, 'Validation', 'No valid MX records found for domain')
+      if answers and len(answers) <= 0:
+        blank_fields.append("Email")
+        form_valid = False
+      
+    # Примечание валидация
+    note = self.visitor_information__note.text()
+    if note == "":
+      blank_fields.append("Примечание")
+      form_valid = False
+    
+    # Серия паспорта валидация
+    series = self.visitor_information__series.text()
+    if series == "":
+      blank_fields.append("Серия паспорта")
+      form_valid = False
+      
+    # Номер паспорта валидация
+    number = self.visitor_information__number.text()
+    if number == "":
+      blank_fields.append("Номер паспорта")
+      form_valid = False
+    
+    if not form_valid:
+      message = "\n".join(blank_fields)
+      QMessageBox.warning(self, "Заполните поля", message)
+    elif form_valid:
+      QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
       
   # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
   def closeEvent(self, event):
