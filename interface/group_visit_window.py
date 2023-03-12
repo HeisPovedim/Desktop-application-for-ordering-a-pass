@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
   QApplication, QLabel, QMainWindow, QPushButton, QWidget, QGridLayout, QGroupBox, QFormLayout, QDateEdit, QWidget,
   QSizePolicy, QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QDialog, QVBoxLayout, QHBoxLayout, QMessageBox
 )
-from helpers.capitalize_text import capitalize_text
+from helpers.helpers import *
 
 
 class GroupVisit(QMainWindow):
