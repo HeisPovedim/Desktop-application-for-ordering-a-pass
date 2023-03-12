@@ -11,6 +11,7 @@ import dns.resolver
 class PersonalWindow(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
+    self.visitor_information__surname = None
     self.receiving_party_fio = None
     self.visitor_information__email = None
     self.attached_documents_selected_ailes_lbl = None
@@ -106,14 +107,14 @@ class PersonalWindow(QMainWindow):
     attached_photo__qvbox_layout.setAlignment(self.attached_photo__photo, Qt.AlignmentFlag.AlignHCenter) # выравнивание по центру
     attached_photo__qvbox_layout.setAlignment(attached_photo__button, Qt.AlignmentFlag.AlignHCenter)     # выравнивание по центру
     
-    # 1-я строка
+    # 1-я строка | Фамилия && Организация
     visitor_information__grid.addWidget(QLabel("Фамилия*:"), 0, 0)
-    visitor_information__surname = QLineEdit()
-    visitor_information__surname.setMaxLength(25)
-    visitor_information__surname.textEdited.connect(
-      lambda: visitor_information__surname.setText(capitalize_text("Surname", visitor_information__surname.text()))
+    self.visitor_information__surname = QLineEdit()
+    self.visitor_information__surname.setMaxLength(25)
+    self.visitor_information__surname.textEdited.connect(
+      lambda: self.visitor_information__surname.setText(capitalize_text("Surname", self.visitor_information__surname.text()))
     )
-    visitor_information__grid.addWidget(visitor_information__surname, 0, 1)
+    visitor_information__grid.addWidget(self.visitor_information__surname, 0, 1)
     visitor_information__grid.addWidget(QLabel("Организация:"), 0, 2)
     visitor_information__organization = QLineEdit()
     visitor_information__grid.addWidget(visitor_information__organization, 0, 3)
@@ -137,23 +138,26 @@ class PersonalWindow(QMainWindow):
     )
     visitor_information__grid.addWidget(visitor_information__patronymic , 2, 1)
     visitor_information__grid.addWidget(QLabel("Дата рождения:"), 2, 2)
-    visitor_information_edit_with = QDateEdit(visitor_information__group_box) # создание поля с датой рождения
-    visitor_information_edit_with.setCalendarPopup(True) # включение календаря
+    visitor_information_edit_with = QDateEdit()
+    visitor_information_edit_with.setMaximumDate(QDate.currentDate().addYears(-16))
+    visitor_information_edit_with.setCalendarPopup(True)
     visitor_information__grid.addWidget(visitor_information_edit_with, 2, 3)
     # 4-я строка
     visitor_information__grid.addWidget(QLabel("Телефон:"), 3, 0)
     visitor_information__phone = QLineEdit()
     visitor_information__phone.setInputMask('+7 (999) 999-99-99')
     visitor_information__grid.addWidget(visitor_information__phone, 3, 1)
-    visitor_information__grid.addWidget(QLabel("Серия*:"), 3, 2)
+    visitor_information__grid.addWidget(QLabel("Серия паспорта*:"), 3, 2)
     visitor_information__series = QLineEdit()
+    visitor_information__series.setMaxLength(4)
     visitor_information__grid.addWidget(visitor_information__series, 3, 3)
     # 5-я строка
     visitor_information__grid.addWidget(QLabel("E-mail*:"), 4, 0)
     self.visitor_information__email = QLineEdit()
     visitor_information__grid.addWidget(self.visitor_information__email, 4, 1)
-    visitor_information__grid.addWidget(QLabel("Номер*:"), 4, 2)
+    visitor_information__grid.addWidget(QLabel("Номер паспорта*:"), 4, 2)
     visitor_information__number = QLineEdit()
+    visitor_information__number.setMaxLength(6)
     visitor_information__grid.addWidget(visitor_information__number, 4, 3)
     # блок с фотографией
     visitor_information__grid.addLayout(attached_photo__qvbox_layout, 0, 4, 6, 1)
@@ -223,33 +227,38 @@ class PersonalWindow(QMainWindow):
   # ОБРАБОТКИ ФОРМЫ
   def make_application(self):
     print("Работает")
-    # фио валидация
+    blank_fields = [] # массив, куда мы будем записывать наши не записанные поля
+    
+    # ФИО валидация
     fio = self.receiving_party_fio.text()
-    if fio != "":
-      print("Ok")
-    else:
-      QMessageBox.warning(self, "Пиздец", "Ну ты и еблан, напиши ФИО")
+    if fio == "":
+      blank_fields.append("ФИО")
       
-    # email валидация
+    # Фамилия валидация
+    surname = self.visitor_information__surname.text()
+    if surname == "":
+      blank_fields.append("Фамилия")
+    
+    # E-mail валидация
     email = self.visitor_information__email.text().strip()
     domain = email.split('@')[-1]
     
-    if email != "":
+    if email == "":
+      blank_fields.append("Email")
+    else:
       # получаем MX записи домена
       try:
         answers = dns.resolver.resolve(domain, 'MX')
       except dns.resolver.NXDOMAIN:
         QMessageBox.warning(self, 'Validation', 'No MX records found for domain')
         return
-  
       # проверяем, есть ли хотя бы один адрес сервера в ответе
       if len(answers) > 0:
         QMessageBox.information(self, 'Validation', 'Email is valid')
       else:
         QMessageBox.warning(self, 'Validation', 'No valid MX records found for domain')
-    else:
-      QMessageBox.warning(self, "ПОЧТА!!", "Ты забыл почту олень!")
       
+  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
   def closeEvent(self, event):
     self.start_window.show()
     self.hide()
