@@ -1,10 +1,6 @@
-from PyQt6.QtCore import Qt, QDate, QRegularExpression
-from PyQt6.QtGui import QPixmap, QIcon, QRegularExpressionValidator
-from PyQt6.QtWidgets import (
-  QApplication, QLabel, QMainWindow, QPushButton, QWidget, QGridLayout, QGroupBox, QFormLayout, QDateEdit, QWidget,
-  QSizePolicy, QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QDialog, QVBoxLayout, QHBoxLayout, QMessageBox
-)
-from helpers.capitalize_text import capitalize_text
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QPixmap, QIcon
+from PyQt6.QtWidgets import QLabel, QMainWindow, QWidget
 
 from interface.individual_visit_window import PersonalWindow
 from interface.group_visit_window import GroupVisit
@@ -22,7 +18,7 @@ class MainWindow(QMainWindow):
     widget = QWidget(self)
     self.setCentralWidget(widget)
 
-    # создаем лейблы для каждой картинки и подписи
+    # создаем картинки и подписи
     self.label1 = QLabel(widget)
     self.label1.setPixmap(QPixmap("./img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
     self.label1.move(25, 50)
@@ -35,15 +31,14 @@ class MainWindow(QMainWindow):
     self.caption2 = QLabel("Групповое посещение", widget)
     self.caption2.move(405, 315)
 
-    # привязываем к лейблам события нажатия на них
+    # привязываем к картинкам события
     self.label1.mousePressEvent = lambda event: self.individual_visit_window()
     self.label2.mousePressEvent = lambda event: self.group_visit_window()
   
   def individual_visit_window(self):
     self.hide()
-    personal_page = PersonalWindow(self)
+    PersonalWindow(self).show()
     
   def group_visit_window(self):
     self.hide()
     group_page = GroupVisit(self)
-    
