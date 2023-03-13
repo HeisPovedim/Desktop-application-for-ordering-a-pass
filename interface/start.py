@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
   def __init__(self):
     super().__init__()
     
-  # задаем фиксированный размер главного окна и его заголовок
+    # задаем фиксированный размер главного окна и его заголовок
     self.setWindowTitle("IDVisitor")
     self.setWindowIcon(QIcon("./img/icon.png"))
     self.setFixedSize(600, 400)

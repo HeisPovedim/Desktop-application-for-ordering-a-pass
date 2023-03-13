@@ -8,6 +8,9 @@ from PyQt6.QtWidgets import (
 # HELPERS
 from helpers.helpers import *
 
+# Database
+from MySQL.connect_db import DB
+
 # БИБЛИОТЕКИ
 import dns.resolver
 import re
@@ -15,6 +18,11 @@ import re
 class PersonalWindow(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
+
+    self.visitorInformation_birthdate = None
+    self.visitorInformation_phone = None
+    self.receivingParty_comboBox = None
+    self.infoPass_comboBox = None
     self.visitorInformation_number = None
     self.visitorInformation_patronymic = None
     self.visitorInformation_note = None
@@ -30,6 +38,13 @@ class PersonalWindow(QMainWindow):
     self.infoPass_dateWith = None
     
     self.start_window = start_window
+    self.db = DB()
+    self.connect = self.db.connect
+    self.cursor = self.db.cursor
+    # self.cursor.execute("SELECT * FROM users")
+    # result = self.cursor.fetchall()
+    # print(result)
+    
 
     # ?: создаем новое окно и задаем ему фиксированный размер с заголовком
     self.setWindowTitle("IDVisitor")
@@ -37,7 +52,6 @@ class PersonalWindow(QMainWindow):
     self.setCentralWidget(QWidget())
     
     self.initGUI()
-    
     
   def initGUI(self):
     
@@ -59,15 +73,15 @@ class PersonalWindow(QMainWindow):
       [QLabel("c"), self.infoPass_dateWith, QLabel("по"), self.infoPass_dateAbout]
     )
 
-    infoPass_comboBox = QComboBox() # строка выбора "Цель посещения"
-    infoPass_comboBox.addItems(     # добавление списка из состоящего из массива
+    self.infoPass_comboBox = QComboBox() # строка выбора "Цель посещения"
+    self.infoPass_comboBox.addItems(     # добавление списка из состоящего из массива
       ["Ознакомление", "Экскурсия", "Мне просто спросить"]
     )
     
     infoPass_grid.addWidget(QLabel("Срок действия заявки*:"), 0, 0) # 1-я строка
     infoPass_grid.addLayout(infoPass_groupDate, 1, 0)               # 2-я строка
     infoPass_grid.addWidget(QLabel("Цель посещения*:"), 2, 0)       # 3-я строка
-    infoPass_grid.addWidget(infoPass_comboBox, 3, 0)                # 4-я строка
+    infoPass_grid.addWidget(self.infoPass_comboBox, 3, 0)                # 4-я строка
     
     # @: создаем форму => Принимающая сторона
     receivingParty_groupBox = QGroupBox("Принимающая сторона")  # создаем групповой блок
@@ -75,15 +89,16 @@ class PersonalWindow(QMainWindow):
     receivingParty_grid.setAlignment(Qt.AlignmentFlag.AlignTop) # выравнивание по верху группового блока
     receivingParty_groupBox.setLayout(receivingParty_grid)      # добавление сетки в групповой блок
     
-    receivingParty_comboBox = QComboBox()                      # строка выбора "Подразделение"
-    receivingParty_comboBox.addItems(["ТКМП", "ЮФУ", "ГИБДД"]) # добавление списка из состоящего из массива
+    self.receivingParty_comboBox = QComboBox()                      # строка выбора "Подразделение"
+    self.receivingParty_comboBox.addItems(["ТКМП", "ЮФУ", "ГИБДД"]) # добавление списка из состоящего из массива
     
     self.receivingParty_fio = QLineEdit() # строка ввода фамилии
-    self.receivingParty_fio.setValidator(QRegularExpressionValidator(QRegularExpression("^[а-яА-Я\\s]*$")))
+    # self.receivingParty_fio.setValidator(QRegularExpressionValidator(QRegularExpression("^[а-яА-Я\\s]*$")))
+    self.receivingParty_fio.textChanged.connect(self.validate_input)
     self.receivingParty_fio.setMaxLength(50)
     
     receivingParty_grid.addWidget(QLabel("Подразделение*:"), 0, 0)  # 1-я строка
-    receivingParty_grid.addWidget(receivingParty_comboBox, 1, 0) # 2-я строка
+    receivingParty_grid.addWidget(self.receivingParty_comboBox, 1, 0) # 2-я строка
     receivingParty_grid.addWidget(QLabel("ФИО*:"), 2, 0)            # 3-я строка
     receivingParty_grid.addWidget(self.receivingParty_fio, 3, 0)    # 4-я строка
     
@@ -153,13 +168,13 @@ class PersonalWindow(QMainWindow):
     visitorInformation_grid.addWidget(self.visitorInformation_patronymic , 2, 1)
     
     visitorInformation_grid.addWidget(QLabel("Дата рождения:"), 2, 2)
-    visitorInformation_birthdate = QDateEdit() ; visitorInformation_birthdate.setCalendarPopup(True)
-    visitorInformation_birthdate.setMaximumDate(QDate.currentDate().addYears(-16))
-    visitorInformation_grid.addWidget(visitorInformation_birthdate, 2, 3)
+    self.visitorInformation_birthdate = QDateEdit() ; self.visitorInformation_birthdate.setCalendarPopup(True)
+    self.visitorInformation_birthdate.setMaximumDate(QDate.currentDate().addYears(-16))
+    visitorInformation_grid.addWidget(self.visitorInformation_birthdate, 2, 3)
     # 4-я строка
     visitorInformation_grid.addWidget(QLabel("Телефон:"), 3, 0)
-    visitorInformation_phone = QLineEdit() ; visitorInformation_phone.setInputMask('+7 (999) 999-99-99')
-    visitorInformation_grid.addWidget(visitorInformation_phone, 3, 1)
+    self.visitorInformation_phone = QLineEdit() ; self.visitorInformation_phone.setInputMask('+7 (999) 999-99-99')
+    visitorInformation_grid.addWidget(self.visitorInformation_phone, 3, 1)
     visitorInformation_grid.addWidget(QLabel("Серия паспорта*:"), 3, 2)
     self.visitorInformation_series = QLineEdit() ; self.visitorInformation_series.setMaxLength(4)
     visitorInformation_grid.addWidget(self.visitorInformation_series, 3, 3)
@@ -172,8 +187,7 @@ class PersonalWindow(QMainWindow):
     visitorInformation_grid.addWidget(self.visitorInformation_email, 4, 1)
     
     visitorInformation_grid.addWidget(QLabel("Номер паспорта*:"), 4, 2)
-    self.visitorInformation_number = QLineEdit()
-    self.visitorInformation_number.setMaxLength(6)
+    self.visitorInformation_number = QLineEdit() ; self.visitorInformation_number.setMaxLength(6)
     visitorInformation_grid.addWidget(self.visitorInformation_number, 4, 3)
     
     # @: создаем форму => Прикрепляемые документы
@@ -308,9 +322,47 @@ class PersonalWindow(QMainWindow):
       message = "\n".join(blank_fields)
       QMessageBox.warning(self, "Заполните поля", message)
     elif form_valid:
+      sql = "INSERT INTO personal_visit(validity_period_from ,validity_period_for,purpose_of_the_visit,division,FIO,surname,name,patronymic,phone,email,organization,note,birthdate,passport_series,passport_number) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+      val = (
+        self.infoPass_dateWith.date().toString("yyyy-MM-dd"),
+        self.infoPass_dateAbout.date().toString("yyyy-MM-dd"),
+        self.infoPass_comboBox.currentText(),
+        self.receivingParty_comboBox.currentText(),
+        self.receivingParty_fio.text(),
+        self.visitorInformation_surname.text(),
+        self.visitorInformation_name.text(),
+        self.visitorInformation_patronymic.text(),
+        self.visitorInformation_phone.text(),
+        self.visitorInformation_email.text(),
+        self.visitorInformation_organization.text(),
+        self.visitorInformation_note.text(),
+        self.visitorInformation_birthdate.date().toString("yyyy-MM-dd"),
+        self.visitorInformation_series.text(),
+        self.visitorInformation_number.text()
+      )
+      self.cursor.execute(
+        sql,
+        val
+      )
+      self.connect.commit()
       QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
       
   # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
   def closeEvent(self, event):
     self.start_window.show()
     self.hide()
+
+  def validate_input(self):
+    text = self.receivingParty_fio.text().strip()
+    words = text.split()
+    if len(words) > 3:
+      cursor_pos = self.receivingParty_fio.cursorPosition()
+      self.receivingParty_fio.setText(" ".join(words[:3]))
+      self.receivingParty_fio.setCursorPosition(cursor_pos - 1)
+
+  def keyPressEvent(self, event):
+    # запрещаем ввод пробелов, если слов уже три
+    if event.key() == Qt.Key and len(self.receivingParty_fio.text().split()) >= 3:
+      event.ignore()
+    else:
+      super().keyPressEvent(event)
