@@ -1,5 +1,7 @@
+import os
+
 from PyQt6.QtCore import Qt, QRegularExpression
-from PyQt6.QtGui import QPixmap, QRegularExpressionValidator
+from PyQt6.QtGui import QPixmap, QRegularExpressionValidator, QIntValidator
 from PyQt6.QtWidgets import (
   QLabel, QMainWindow, QPushButton, QGridLayout, QGroupBox, QFormLayout, QWidget,
   QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QVBoxLayout, QMessageBox
@@ -19,6 +21,7 @@ class PersonalWindow(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
 
+    self.file_names = None
     self.visitorInformation_birthdate = None
     self.visitorInformation_phone = None
     self.receivingParty_comboBox = None
@@ -41,10 +44,8 @@ class PersonalWindow(QMainWindow):
     self.db = DB()
     self.connect = self.db.connect
     self.cursor = self.db.cursor
-    # self.cursor.execute("SELECT * FROM users")
-    # result = self.cursor.fetchall()
-    # print(result)
-    
+
+    print(self.cursor.execute("SELECT LAST_INSERT_ID()"))
 
     # ?: создаем новое окно и задаем ему фиксированный размер с заголовком
     self.setWindowTitle("IDVisitor")
@@ -93,18 +94,18 @@ class PersonalWindow(QMainWindow):
     self.receivingParty_comboBox.addItems(["ТКМП", "ЮФУ", "ГИБДД"]) # добавление списка из состоящего из массива
     
     self.receivingParty_fio = QLineEdit() # строка ввода фамилии
-    # self.receivingParty_fio.setValidator(QRegularExpressionValidator(QRegularExpression("^[а-яА-Я\\s]*$")))
     self.receivingParty_fio.textChanged.connect(self.validate_input)
+    self.receivingParty_fio.textChanged.connect(
+      lambda: self.receivingParty_fio.setText(
+        re.sub(r'[^а-яА-Я\\s ]', '', self.receivingParty_fio.text().title())
+      )
+    )
     self.receivingParty_fio.setMaxLength(50)
     
     receivingParty_grid.addWidget(QLabel("Подразделение*:"), 0, 0)  # 1-я строка
     receivingParty_grid.addWidget(self.receivingParty_comboBox, 1, 0) # 2-я строка
     receivingParty_grid.addWidget(QLabel("ФИО*:"), 2, 0)            # 3-я строка
     receivingParty_grid.addWidget(self.receivingParty_fio, 3, 0)    # 4-я строка
-    
-    self.receivingParty_fio.textEdited.connect(
-      lambda: self.receivingParty_fio.setText(capitalize_text("FIO", self.receivingParty_fio.text()))
-    )
     
     # @: создаем форму => Информация о посетителе
     visitorInformation_groupBox = QGroupBox("Информация о посетителе") # создаем групповой блок
@@ -141,7 +142,9 @@ class PersonalWindow(QMainWindow):
     visitorInformation_grid.addWidget(QLabel("Фамилия*:"), 0, 0)
     self.visitorInformation_surname = QLineEdit() ; self.visitorInformation_surname.setMaxLength(INPUT_LENGTH)
     self.visitorInformation_surname.textEdited.connect(
-      lambda: self.visitorInformation_surname.setText(capitalize_text("Surname", self.visitorInformation_surname.text()))
+      lambda: self.visitorInformation_surname.setText(
+        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_surname.text().title())
+      )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_surname, 0, 1)
     
@@ -152,7 +155,9 @@ class PersonalWindow(QMainWindow):
     visitorInformation_grid.addWidget(QLabel("Имя*:"), 1, 0)
     self.visitorInformation_name = QLineEdit() ; self.visitorInformation_name.setMaxLength(INPUT_LENGTH)
     self.visitorInformation_name.textEdited.connect(
-      lambda: self.visitorInformation_name.setText(capitalize_text("Other", self.visitorInformation_name.text()))
+      lambda: self.visitorInformation_name.setText(
+        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_name.text().title())
+      )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_name, 1, 1)
     
@@ -163,7 +168,9 @@ class PersonalWindow(QMainWindow):
     visitorInformation_grid.addWidget(QLabel("Отчество*:"), 2, 0)
     self.visitorInformation_patronymic = QLineEdit() ; self.visitorInformation_patronymic.setMaxLength(25)
     self.visitorInformation_patronymic.textEdited.connect(
-      lambda: self.visitorInformation_patronymic.setText(capitalize_text("Other", self.visitorInformation_patronymic.text()))
+      lambda: self.visitorInformation_patronymic.setText(
+        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_patronymic.text().title())
+      )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_patronymic , 2, 1)
     
@@ -174,9 +181,11 @@ class PersonalWindow(QMainWindow):
     # 4-я строка
     visitorInformation_grid.addWidget(QLabel("Телефон:"), 3, 0)
     self.visitorInformation_phone = QLineEdit() ; self.visitorInformation_phone.setInputMask('+7 (999) 999-99-99')
+    
     visitorInformation_grid.addWidget(self.visitorInformation_phone, 3, 1)
     visitorInformation_grid.addWidget(QLabel("Серия паспорта*:"), 3, 2)
     self.visitorInformation_series = QLineEdit() ; self.visitorInformation_series.setMaxLength(4)
+    self.visitorInformation_series.setValidator(QIntValidator())
     visitorInformation_grid.addWidget(self.visitorInformation_series, 3, 3)
     # 5-я строка
     visitorInformation_grid.addWidget(QLabel("E-mail*:"), 4, 0)
@@ -188,6 +197,7 @@ class PersonalWindow(QMainWindow):
     
     visitorInformation_grid.addWidget(QLabel("Номер паспорта*:"), 4, 2)
     self.visitorInformation_number = QLineEdit() ; self.visitorInformation_number.setMaxLength(6)
+    self.visitorInformation_number.setValidator(QIntValidator())
     visitorInformation_grid.addWidget(self.visitorInformation_number, 4, 3)
     
     # @: создаем форму => Прикрепляемые документы
@@ -198,7 +208,7 @@ class PersonalWindow(QMainWindow):
     
     attachedDocuments_chooseFileBtn = QPushButton("Выбрать файлы") # cоздание кнопки для вызова диалога выбора файлов
     attachedDocuments_chooseFileBtn.clicked.connect(self.show_file_dialog)
-    self.attachedDocuments_selectedAilesLbl = QLabel()             # метка для отображения выбранных файлов
+    self.attachedDocuments_selectedAilesLbl = QLabel() # метка для отображения выбранных файлов
     attachedDocuments_formLayout.addRow(attachedDocuments_chooseFileBtn)
     attachedDocuments_formLayout.addRow(self.attachedDocuments_selectedAilesLbl)
     
@@ -217,7 +227,7 @@ class PersonalWindow(QMainWindow):
     buttons.addWidget(further_button)
 
     # конфигурация QGridLayout
-    grid = QGridLayout()                                       # grid - для размещения элементов по сетке
+    grid = QGridLayout()                                    # grid - для размещения элементов по сетке
     grid.addWidget(infoPass_groupBox, 0, 0)                 # информация для пропуска
     grid.addWidget(receivingParty_groupBox, 0, 1)           # принимающая сторона
     grid.addWidget(visitorInformation_groupBox, 1, 0, 1, 2) # информация о посетителе
@@ -241,8 +251,19 @@ class PersonalWindow(QMainWindow):
     
   # ОТОБРАЖЕНИЕ ДИАЛОГОВОГО ОКНА ВЫБОРА ФАЙЛОВ
   def show_file_dialog(self):
-    file_names, _ = QFileDialog.getOpenFileNames(self, "Выберите файлы", "", "All Files (*);;Text Files (*.txt)")
-    self.attachedDocuments_selectedAilesLbl.setText("Выбранные файлы: " + ", ".join(file_names)) # отображение выбранных файлов в метке
+    self.file_names, _ = QFileDialog.getOpenFileNames(self, "Выберите файлы", "", "*.pdf")
+    print(self.file_names)
+    self.attachedDocuments_selectedAilesLbl.setText("Выбранные файлы: " + ", ".join(self.file_names)) # отображение выбранных файлов в метке
+
+    # Добавляем сохранение файлов на компьютер
+    if self.file_names:
+      file_path = os.path.join("D:/GitHub/Web-service-for-ordering-a-pass/files/individual_visit_window/pdf_files", "лох.pdf",)
+      for file_name in self.file_names:
+        with open(file_name, 'rb') as file:
+          data = file.read()
+        with open(file_path, 'ab') as file:
+          file.write(data)
+      print("Файлы успешно сохранены.")
     
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
@@ -252,35 +273,32 @@ class PersonalWindow(QMainWindow):
   # ОБРАБОТКИ ФОРМЫ
   def make_application(self):
     print("Работает")
+    print(self.file_names)
     
     blank_fields = [] # массив, куда мы будем записывать наши не записанные поля
-    form_valid = True
+    form_valid = True # формат проверки
     
     # ФИО валидация
-    fio = self.receivingParty_fio.text()
-    if fio == "":
+    if self.receivingParty_fio.text() == "":
       blank_fields.append("ФИО")
       form_valid = False
       
-    # Фамилия валидация
-    surname = self.visitorInformation_surname.text()
-    if surname == "":
+    # Фамилия | валидация
+    if self.visitorInformation_surname.text() == "":
       blank_fields.append("Фамилия")
       form_valid = False
     
-    # Имя валидация
-    name = self.visitorInformation_name.text()
-    if name == "":
+    # Имя | валидация
+    if self.visitorInformation_name.text() == "":
       blank_fields.append("Имя")
       form_valid = False
     
-    # Отчество валидация
-    patronymic = self.visitorInformation_patronymic.text()
-    if patronymic == "":
+    # Отчество | валидация
+    if self.visitorInformation_patronymic.text() == "":
       blank_fields.append("Отчество")
       form_valid = False
     
-    # E-mail валидация
+    # E-mail | валидация
     email = self.visitorInformation_email.text()
     domain = email.split('@')[-1]
     if re.fullmatch(re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
@@ -300,28 +318,33 @@ class PersonalWindow(QMainWindow):
         blank_fields.append("Email")
         form_valid = False
       
-    # Примечание валидация
-    note = self.visitorInformation_note.text()
-    if note == "":
+    # Примечание | валидация
+    if self.visitorInformation_note.text() == "":
       blank_fields.append("Примечание")
       form_valid = False
     
-    # Серия паспорта валидация
-    series = self.visitorInformation_series.text()
-    if series == "":
+    # Серия паспорта | валидация
+    if self.visitorInformation_series.text() == "":
       blank_fields.append("Серия паспорта")
       form_valid = False
       
-    # Номер паспорта валидация
-    number = self.visitorInformation_number.text()
-    if number == "":
+    # Номер паспорта | валидация
+    if self.visitorInformation_number.text() == "":
       blank_fields.append("Номер паспорта")
+      form_valid = False
+      
+    # Прикрепляемые документы | валидация
+    if self.file_names is None:
+      blank_fields.append("Прикрепите документы")
       form_valid = False
     
     if not form_valid:
       message = "\n".join(blank_fields)
       QMessageBox.warning(self, "Заполните поля", message)
     elif form_valid:
+      
+      
+      
       sql = "INSERT INTO personal_visit(validity_period_from ,validity_period_for,purpose_of_the_visit,division,FIO,surname,name,patronymic,phone,email,organization,note,birthdate,passport_series,passport_number) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = (
         self.infoPass_dateWith.date().toString("yyyy-MM-dd"),
@@ -332,7 +355,7 @@ class PersonalWindow(QMainWindow):
         self.visitorInformation_surname.text(),
         self.visitorInformation_name.text(),
         self.visitorInformation_patronymic.text(),
-        self.visitorInformation_phone.text(),
+        re.sub(r'[^\d+]', '', self.visitorInformation_phone.text()),
         self.visitorInformation_email.text(),
         self.visitorInformation_organization.text(),
         self.visitorInformation_note.text(),
@@ -340,10 +363,7 @@ class PersonalWindow(QMainWindow):
         self.visitorInformation_series.text(),
         self.visitorInformation_number.text()
       )
-      self.cursor.execute(
-        sql,
-        val
-      )
+      self.cursor.execute(sql,val)
       self.connect.commit()
       QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
       
