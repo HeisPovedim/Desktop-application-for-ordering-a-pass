@@ -16,3 +16,10 @@ def create_date_edit_with():
   )
   date_edit.setFixedWidth(150)
   return date_edit
+
+def check_three_words(text):
+  words = text.split()
+  if len(words) == 3:
+    return True
+  else:
+    return False

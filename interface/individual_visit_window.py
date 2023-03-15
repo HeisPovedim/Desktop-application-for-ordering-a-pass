@@ -1,5 +1,3 @@
-import os
-
 from PyQt6.QtCore import Qt, QRegularExpression
 from PyQt6.QtGui import QPixmap, QRegularExpressionValidator, QIntValidator
 from PyQt6.QtWidgets import (
@@ -14,38 +12,43 @@ from helpers.helpers import *
 from MySQL.connect_db import DB
 
 # БИБЛИОТЕКИ
+from datetime import datetime
 import dns.resolver
 import re
+import os
 
 class PersonalWindow(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
-
-    self.file_names = None
-    self.visitorInformation_birthdate = None
-    self.visitorInformation_phone = None
-    self.receivingParty_comboBox = None
-    self.infoPass_comboBox = None
-    self.visitorInformation_number = None
-    self.visitorInformation_patronymic = None
-    self.visitorInformation_note = None
-    self.visitorInformation_organization = None
-    self.visitorInformation_series = None
-    self.visitorInformation_name = None
-    self.visitorInformation_surname = None
-    self.receivingParty_fio = None
-    self.visitorInformation_email = None
-    self.attachedDocuments_selectedAilesLbl = None
-    self.attachedPhoto_photo = None
-    self.infoPass_dateAbout = None
-    self.infoPass_dateWith = None
-    
     self.start_window = start_window
+
+    # ?: объявление переменных
+    self.infoPass_dateAbout = None              # дата "c"
+    self.infoPass_dateWith = None               # дата "по"
+    self.infoPass_comboBox = None               # цель посещения
+    self.receivingParty_comboBox = None         # подразделение
+    self.receivingParty_fio = None              # ФИО
+    self.visitorInformation_surname = None      # фамилия
+    self.visitorInformation_name = None         # имя
+    self.visitorInformation_patronymic = None   # отчество
+    self.visitorInformation_phone = None        # номер телефона
+    self.visitorInformation_email = None        # адрес электронной почты
+    self.visitorInformation_organization = None # организация
+    self.visitorInformation_note = None         # примечание
+    self.visitorInformation_birthdate = None    # дата рождения
+    self.visitorInformation_series = None       # серия паспорта
+    self.visitorInformation_number = None       # номер паспорта
+    self.file_photo = None                      # файл загруженного фото
+    self.file_document = None                   # файл загруженного документа
+    self.file_document_name = None              # имя документа
+    self.file_document_unique_name = None
+    self.attachedPhoto_photo = None
+    self.attachedDocuments_selectedAilesLbl = None
+    
+    # ?: настройка базы данных
     self.db = DB()
     self.connect = self.db.connect
     self.cursor = self.db.cursor
-
-    print(self.cursor.execute("SELECT LAST_INSERT_ID()"))
 
     # ?: создаем новое окно и задаем ему фиксированный размер с заголовком
     self.setWindowTitle("IDVisitor")
@@ -207,7 +210,7 @@ class PersonalWindow(QMainWindow):
     attachedDocuments_groupBox.setLayout(attachedDocuments_formLayout) # добавление формы в групповой блок
     
     attachedDocuments_chooseFileBtn = QPushButton("Выбрать файлы") # cоздание кнопки для вызова диалога выбора файлов
-    attachedDocuments_chooseFileBtn.clicked.connect(self.show_file_dialog)
+    attachedDocuments_chooseFileBtn.clicked.connect(self.load_document)
     self.attachedDocuments_selectedAilesLbl = QLabel() # метка для отображения выбранных файлов
     attachedDocuments_formLayout.addRow(attachedDocuments_chooseFileBtn)
     attachedDocuments_formLayout.addRow(self.attachedDocuments_selectedAilesLbl)
@@ -217,11 +220,11 @@ class PersonalWindow(QMainWindow):
 
     back_button = QPushButton("Назад") # кнопка "Назад"
     back_button.setFixedWidth(80)
-    back_button.clicked.connect(lambda: self.show_main_window)
+    back_button.clicked.connect(self.show_main_window)
 
     further_button = QPushButton("Оформить заявку") # кнопка "Оформить заявку"
     further_button.setFixedWidth(120)
-    further_button.clicked.connect(lambda: self.make_application())
+    further_button.clicked.connect(self.make_application)
     
     buttons.addWidget(back_button)
     buttons.addWidget(further_button)
@@ -244,59 +247,65 @@ class PersonalWindow(QMainWindow):
   
   # ЗАГРУЗКА ИЗОБРАЖЕНИЯ
   def load_image(self):
-    file_name, _ = QFileDialog.getOpenFileName(self, "Выберите изображение", "", "Image Files (*.jpg *.png)")
-    if file_name: # загрузка выбранного изображения
-      self.attachedPhoto_photo.setPixmap(QPixmap(file_name))
-      self.attachedPhoto_photo.setScaledContents(True)
+    try:
+      self.file_photo, _ = QFileDialog.getOpenFileName(self, "Выберите изображение", "", "Image Files (*.jpg *.png)")
+      if self.file_photo != "":
+        self.attachedPhoto_photo.setPixmap(QPixmap(self.file_photo))
+        self.attachedPhoto_photo.setScaledContents(True)
+      else:
+        self.file_photo = None
+    except Exception as error:
+      QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить фото: {error}")
     
-  # ОТОБРАЖЕНИЕ ДИАЛОГОВОГО ОКНА ВЫБОРА ФАЙЛОВ
-  def show_file_dialog(self):
-    self.file_names, _ = QFileDialog.getOpenFileNames(self, "Выберите файлы", "", "*.pdf")
-    print(self.file_names)
-    self.attachedDocuments_selectedAilesLbl.setText("Выбранные файлы: " + ", ".join(self.file_names)) # отображение выбранных файлов в метке
-
-    # Добавляем сохранение файлов на компьютер
-    if self.file_names:
-      file_path = os.path.join("D:/GitHub/Web-service-for-ordering-a-pass/files/individual_visit_window/pdf_files", "лох.pdf",)
-      for file_name in self.file_names:
-        with open(file_name, 'rb') as file:
-          data = file.read()
-        with open(file_path, 'ab') as file:
-          file.write(data)
-      print("Файлы успешно сохранены.")
+  # ЗАГРУЗКА ФАЙЛА
+  def load_document(self):
+    try:
+      self.file_document, _ = QFileDialog.getOpenFileName(self, "Выберите файлы", "", "*.pdf")
+      self.file_document_name = os.path.basename(self.file_document)
+      self.attachedDocuments_selectedAilesLbl.setText("Выбранные файлы: " + self.file_document)
+    except Exception as error:
+      QMessageBox.warning(self, "Ошибка", f"Не удалось загрузить файлы: {error}")
     
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
-    self.hide()
     self.start_window.show()
+    self.hide()
     
   # ОБРАБОТКИ ФОРМЫ
   def make_application(self):
-    print("Работает")
-    print(self.file_names)
-    
     blank_fields = [] # массив, куда мы будем записывать наши не записанные поля
     form_valid = True # формат проверки
-    
-    # ФИО валидация
-    if self.receivingParty_fio.text() == "":
+
+    # ФИО | валидация
+    if not check_three_words(self.receivingParty_fio.text()) or self.receivingParty_fio.text() == "":
       blank_fields.append("ФИО")
       form_valid = False
-      
-    # Фамилия | валидация
-    if self.visitorInformation_surname.text() == "":
-      blank_fields.append("Фамилия")
-      form_valid = False
     
-    # Имя | валидация
-    if self.visitorInformation_name.text() == "":
-      blank_fields.append("Имя")
-      form_valid = False
-    
-    # Отчество | валидация
-    if self.visitorInformation_patronymic.text() == "":
-      blank_fields.append("Отчество")
-      form_valid = False
+    # Быстрая валидация одинарных полей на пустоту
+    array_valid = [
+      [
+      self.visitorInformation_surname.text(),
+      self.visitorInformation_name.text(),
+      self.visitorInformation_patronymic.text(),
+      self.visitorInformation_note.text(),
+      self.visitorInformation_series.text(),
+      self.visitorInformation_number.text(),
+      ],
+      [
+        "Фамилия",
+        "Имя",
+        "Отчество",
+        "Примечание",
+        "Серия паспорта",
+        "Номер паспорта"
+        ]
+    ]
+
+    for i in range(len(array_valid)):
+      for j in range(len(array_valid[i])):
+        if array_valid[i][j] == "":
+          blank_fields.append(array_valid[1][j])
+          form_valid = False
     
     # E-mail | валидация
     email = self.visitorInformation_email.text()
@@ -317,35 +326,62 @@ class PersonalWindow(QMainWindow):
       if answers and len(answers) <= 0:
         blank_fields.append("Email")
         form_valid = False
-      
-    # Примечание | валидация
-    if self.visitorInformation_note.text() == "":
-      blank_fields.append("Примечание")
-      form_valid = False
     
-    # Серия паспорта | валидация
-    if self.visitorInformation_series.text() == "":
-      blank_fields.append("Серия паспорта")
-      form_valid = False
-      
-    # Номер паспорта | валидация
-    if self.visitorInformation_number.text() == "":
-      blank_fields.append("Номер паспорта")
-      form_valid = False
-      
-    # Прикрепляемые документы | валидация
-    if self.file_names is None:
+    # Прикрепление фото | валидация
+    if self.file_photo is None or self.file_photo == "":
+      self.file_photo=None
+    
+    # Прикрепление документа | валидация
+    if self.file_document is None or self.file_document == "":
       blank_fields.append("Прикрепите документы")
+      self.file_document=None
       form_valid = False
     
+    # Проверка формы на валидность
     if not form_valid:
       message = "\n".join(blank_fields)
       QMessageBox.warning(self, "Заполните поля", message)
     elif form_valid:
+      # Cохранение документов на компьютере
+      if self.file_document:
+        file_path = os.path.join(
+          "D:/GitHub/Web-service-for-ordering-a-pass/files/individual_visit_window/pdf_files",
+          f'{datetime.now():%Y-%m-%d %H-%M-%S%z}.pdf'
+        )
+        try:
+          with open( self.file_document, 'rb') as file:
+            data = file.read()
+          with open(file_path, 'ab') as file:
+            file.write(data)
+          print("Файлы успешно сохранены.")
+        except Exception as error:
+          QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
       
+      # Номер | валидация
+      phone_valid = ""
+      if len(re.sub(r'[^\d+]', '', self.visitorInformation_phone.text())) == 12:
+        phone_valid = re.sub(r'[^\d+]', '', self.visitorInformation_phone.text())
       
-      
-      sql = "INSERT INTO personal_visit(validity_period_from ,validity_period_for,purpose_of_the_visit,division,FIO,surname,name,patronymic,phone,email,organization,note,birthdate,passport_series,passport_number) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+      # Сохранение в базу данных
+      sql = "INSERT INTO personal_visit(" \
+            "validity_period_from," \
+            "validity_period_for," \
+            "purpose_of_the_visit," \
+            "division," \
+            "FIO," \
+            "surname," \
+            "name," \
+            "patronymic," \
+            "phone," \
+            "email," \
+            "organization," \
+            "note,birthdate," \
+            "passport_series," \
+            "passport_number," \
+            "document_name," \
+            "document_unique_name," \
+            "photo" \
+            ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = (
         self.infoPass_dateWith.date().toString("yyyy-MM-dd"),
         self.infoPass_dateAbout.date().toString("yyyy-MM-dd"),
@@ -355,13 +391,16 @@ class PersonalWindow(QMainWindow):
         self.visitorInformation_surname.text(),
         self.visitorInformation_name.text(),
         self.visitorInformation_patronymic.text(),
-        re.sub(r'[^\d+]', '', self.visitorInformation_phone.text()),
+        phone_valid,
         self.visitorInformation_email.text(),
         self.visitorInformation_organization.text(),
         self.visitorInformation_note.text(),
         self.visitorInformation_birthdate.date().toString("yyyy-MM-dd"),
         self.visitorInformation_series.text(),
-        self.visitorInformation_number.text()
+        self.visitorInformation_number.text(),
+        self.file_document_name,
+        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}',
+        self.file_photo
       )
       self.cursor.execute(sql,val)
       self.connect.commit()
