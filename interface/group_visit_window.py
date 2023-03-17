@@ -12,24 +12,22 @@ class GroupVisit(QMainWindow):
   def __init__(self,start_window):
     super().__init__()
     
-    new_window = QMainWindow(self)
-    new_window.setFixedSize(600, 400)
+    self.setFixedSize(600, 400)
+    # self.setCentralWidget(QWidget())
     
     self.start_window = start_window
   
     # создаем кнопку назад и привязываем к ней событие нажатия
-    self.back_button = QPushButton("Назад", new_window)
+    self.back_button = QPushButton("Назад", self)
     self.back_button.move(260, 200)
-    self.back_button.clicked.connect(lambda: self.show_main_window(new_window))
-
-    # привязываем к новому окну событие закрытия окна
-    new_window.closeEvent = lambda: self.show_main_window(new_window)
-
-    # показываем новое окно
-    new_window.show()
-    self.hide()
+    self.back_button.clicked.connect(lambda: self.show_main_window())
     
-  def show_main_window(self, new_window):
+  def show_main_window(self):
     # показываем главное окно и закрываем новое окно
-    new_window.hide()
     self.start_window.show()
+    self.hide()
+
+  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
+  def closeEvent(self, event):
+    self.start_window.show()
+    self.hide()

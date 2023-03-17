@@ -1,5 +1,6 @@
 import mysql.connector
 from .config import *
+
 class DB(object):
   def __init__(self):
     self.connect = mysql.connector.connect(

@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QLabel, QMainWindow, QWidget
 
 from interface.individual_visit_window import PersonalWindow
 from interface.group_visit_window import GroupVisit
+from interface.test import Test
 
 class MainWindow(QMainWindow):
   def __init__(self):
@@ -41,4 +42,4 @@ class MainWindow(QMainWindow):
     
   def group_visit_window(self):
     self.hide()
-    group_page = GroupVisit(self)
+    GroupVisit(self).show()
