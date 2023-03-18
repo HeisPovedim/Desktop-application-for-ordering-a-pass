@@ -2,7 +2,7 @@
 from PyQt6.QtWidgets import QGroupBox, QGridLayout, QHBoxLayout, QLabel, QComboBox
 from PyQt6.QtCore import Qt
 
-# Библиотеки
+# HELPERS
 from helpers.helpers import *
 
 class InformationPass(QGroupBox):

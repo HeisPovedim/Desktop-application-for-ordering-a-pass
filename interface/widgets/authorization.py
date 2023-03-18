@@ -2,6 +2,7 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QMessageBox, QLineEdit, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 
+# WINDOW
 from interface.selection_window import SelectionWindow
 
 # HELPERS
@@ -9,7 +10,7 @@ from helpers.regulars import *
 
 # DATABASE
 from MySQL.connect_db import DB
-from data.user import User
+from data.user import user
 
 # LIBRARIES
 import hashlib
@@ -106,7 +107,7 @@ class Authorization(QMainWindow):
 
   # ПЕРЕХОД К ОКНУ ВЫБОРА
   def open_selection_window(self):
-    User(self.input_login.text(), self.input_password.text())
+    user["username"] = self.input_login.text()
     self.close()
     self.db.close()
     self.reset_fields()

@@ -1,5 +1,7 @@
 # ВИДЖЕТ - ПРИКРЕПЛЯЕМЫЕ ДОКУМЕНТЫ
 from PyQt6.QtWidgets import QGroupBox, QFormLayout, QPushButton, QLabel, QMessageBox, QFileDialog
+
+# LIBRARIES
 import os
 
 class AttachingDocuments(QGroupBox):

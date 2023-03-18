@@ -9,14 +9,16 @@ from interface.widgets.buttons import Buttons
 
 # HELPERS
 from helpers.helpers import *
-from helpers import regulars
 
 # DATABASE
 from MySQL.connect_db import DB
+from data.user import user
 
 # LIBRARIES
 from datetime import datetime
 import dns.resolver
+import hashlib
+import re
 import os
 
 class PersonalWindow(QMainWindow):
@@ -41,6 +43,12 @@ class PersonalWindow(QMainWindow):
     self.connect = self.db.connect
     self.cursor = self.db.cursor
 
+    # Получение текущего ID пользователя
+    self.username = user["username"]
+    query = f"SELECT id FROM users WHERE login='{self.username}'"
+    self.cursor.execute(query)
+    self.userId = self.cursor.fetchone()
+
     self.initGUI()
 
   def initGUI(self):
@@ -64,7 +72,7 @@ class PersonalWindow(QMainWindow):
     blank_fields = []  # массив, куда мы будем записывать наши не заполненные поля
     form_valid = True  # формат проверки
 
-    # ФИО
+    # ФИО - длина макс. 3 и пустое поле
     if not check_three_words(self.receiving_party.fio.text()) or self.receiving_party.fio.text() == "":
       blank_fields.append("ФИО")
       form_valid = False
@@ -88,23 +96,21 @@ class PersonalWindow(QMainWindow):
         "Номер паспорта"
       ]
     ]
-
     for i in range(len(array_valid)):
       for j in range(len(array_valid[i])):
         if array_valid[i][j] == "":
           blank_fields.append(array_valid[1][j])
           form_valid = False
 
-    # E-mail
+    # E-mail - регулярное выражение и существование доменов
     email = self.visitor_information.email.text()
     domain = email.split('@')[-1]
-    if regulars.fullmatch(regulars.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
+    if re.fullmatch(re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
       blank_fields.append("Email")
       form_valid = False
     else:
-      # получаем MX записи домена
       try:
-        answers = dns.resolver.resolve(domain, 'MX')
+        answers = dns.resolver.resolve(domain, 'MX') # получаем MX записи домена
       except dns.resolver.NXDOMAIN:
         blank_fields.append("Email")
         form_valid = False
@@ -115,17 +121,17 @@ class PersonalWindow(QMainWindow):
         blank_fields.append("Email")
         form_valid = False
 
-    # Прикрепление фото
+    # Прикрепление фото - пустая строка и ничего не выбрано
     if self.visitor_information.file_photo is None or self.visitor_information.file_photo == "":
       self.visitor_information.file_photo = None
 
-    # Прикрепление документа
+    # Прикрепление документа - пустая строка и ничего не выбрано
     if self.attaching_documents.file_document is None or self.attaching_documents.file_document == "":
       blank_fields.append("Прикрепите документы")
       self.attaching_documents.file_document = None
       form_valid = False
 
-    # Валидация формы
+    # Основная валидация с последующей записью в БД
     if not form_valid:
       message = "\n".join(blank_fields)
       QMessageBox.warning(self, "Заполните поля", message)
@@ -134,7 +140,7 @@ class PersonalWindow(QMainWindow):
       if self.attaching_documents.file_document:
         file_path = os.path.join(
           "D:/Project/GitHub/Web-service-for-ordering-a-pass/files/individual_visit_window/pdf_files",
-          f'{datetime.now():%Y-%m-%d %H-%M-%S%z}.pdf'
+          hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:
           with open(self.attaching_documents.file_document, 'rb') as file:
@@ -145,32 +151,33 @@ class PersonalWindow(QMainWindow):
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
 
-      # Номер
+      # Номер - убираем лишние символы и проверяем длину номера
       phone_valid = ""
-      if len(regulars.sub(r'[^\d+]', '', self.visitor_information.phone.text())) == 12:
-        phone_valid = regulars.sub(r'[^\d+]', '', self.visitor_information.phone.text())
+      if len(re.sub(r'[^\d+]', '', self.visitor_information.phone.text())) == 12:
+        phone_valid = re.sub(r'[^\d+]', '', self.visitor_information.phone.text())
 
       # Сохранение в базу данных
       sql = "INSERT INTO personal_visit(" \
-            "validity_period_from," \
-            "validity_period_for," \
-            "purpose_of_the_visit," \
-            "division," \
-            "FIO," \
-            "surname," \
-            "name," \
-            "patronymic," \
-            "phone," \
-            "email," \
-            "organization," \
-            "note,birthdate," \
-            "passport_series," \
-            "passport_number," \
-            "document_name," \
-            "document_unique_name," \
-            "photo" \
+              "users_id," \
+              "validity_period_from," \
+              "validity_period_for," \
+              "purpose_of_the_visit," \
+              "division," \
+              "FIO," \
+              "surname," \
+              "name," \
+              "patronymic," \
+              "phone," \
+              "email," \
+              "organization," \
+              "note,birthdate," \
+              "passport_series," \
+              "passport_number," \
+              "document_name," \
+              "photo" \
             ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = (
+        self.userId[0],
         self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.comboBox.currentText(),
@@ -187,7 +194,6 @@ class PersonalWindow(QMainWindow):
         self.visitor_information.series.text(),
         self.visitor_information.number.text(),
         self.attaching_documents.file_document_name,
-        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}',
         self.visitor_information.file_photo
       )
       self.cursor.execute(sql, val)

@@ -1,7 +1,6 @@
 # ВИДЖЕТ - КНОПКИ
 from PyQt6.QtWidgets import QHBoxLayout, QPushButton
 
-
 class Buttons(QHBoxLayout):
   def __init__(self):
     super().__init__()

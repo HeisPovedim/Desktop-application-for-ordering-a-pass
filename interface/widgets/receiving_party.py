@@ -1,6 +1,8 @@
 # ВИДЖЕТ - ПРИНИМАЮЩАЯ СТОРОНА
 from PyQt6.QtWidgets import QGroupBox, QGridLayout, QComboBox, QLineEdit, QLabel
 from PyQt6.QtCore import Qt
+
+# LIBRARIES
 import re
 
 class ReceivingParty(QGroupBox):
