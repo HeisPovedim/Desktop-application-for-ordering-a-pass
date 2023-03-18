@@ -105,7 +105,7 @@ class PersonalWindow(QMainWindow):
     self.receivingParty_fio.textChanged.connect(self.validate_input)
     self.receivingParty_fio.textChanged.connect(
       lambda: self.receivingParty_fio.setText(
-        re.sub(r'[^а-яА-Я\\s ]', '', self.receivingParty_fio.text().title())
+        regulars.sub(r'[^а-яА-Я\\s ]', '', self.receivingParty_fio.text().title())
       )
     )
     self.receivingParty_fio.setMaxLength(50)
@@ -151,7 +151,7 @@ class PersonalWindow(QMainWindow):
     self.visitorInformation_surname = QLineEdit() ; self.visitorInformation_surname.setMaxLength(INPUT_LENGTH)
     self.visitorInformation_surname.textEdited.connect(
       lambda: self.visitorInformation_surname.setText(
-        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_surname.text().title())
+        regulars.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_surname.text().title())
       )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_surname, 0, 1)
@@ -164,7 +164,7 @@ class PersonalWindow(QMainWindow):
     self.visitorInformation_name = QLineEdit() ; self.visitorInformation_name.setMaxLength(INPUT_LENGTH)
     self.visitorInformation_name.textEdited.connect(
       lambda: self.visitorInformation_name.setText(
-        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_name.text().title())
+        regulars.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_name.text().title())
       )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_name, 1, 1)
@@ -177,7 +177,7 @@ class PersonalWindow(QMainWindow):
     self.visitorInformation_patronymic = QLineEdit() ; self.visitorInformation_patronymic.setMaxLength(25)
     self.visitorInformation_patronymic.textEdited.connect(
       lambda: self.visitorInformation_patronymic.setText(
-        re.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_patronymic.text().title())
+        regulars.sub(r'[^а-яА-ЯёЁ]', '', self.visitorInformation_patronymic.text().title())
       )
     )
     visitorInformation_grid.addWidget(self.visitorInformation_patronymic , 2, 1)
@@ -315,7 +315,7 @@ class PersonalWindow(QMainWindow):
     # E-mail | валидация
     email = self.visitorInformation_email.text()
     domain = email.split('@')[-1]
-    if re.fullmatch(re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
+    if regulars.fullmatch(regulars.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+'), email) is None:
       blank_fields.append("Email")
       form_valid = False
     else:
@@ -364,8 +364,8 @@ class PersonalWindow(QMainWindow):
       
       # Номер | валидация
       phone_valid = ""
-      if len(re.sub(r'[^\d+]', '', self.visitorInformation_phone.text())) == 12:
-        phone_valid = re.sub(r'[^\d+]', '', self.visitorInformation_phone.text())
+      if len(regulars.sub(r'[^\d+]', '', self.visitorInformation_phone.text())) == 12:
+        phone_valid = regulars.sub(r'[^\d+]', '', self.visitorInformation_phone.text())
       
       # Сохранение в базу данных
       sql = "INSERT INTO personal_visit(" \

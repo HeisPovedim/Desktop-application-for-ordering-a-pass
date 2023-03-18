@@ -1,3 +1,4 @@
+# ВИДЖЕТ - ИНФОРМАЦИЯ ДЛЯ ПРОПУСКА
 from PyQt6.QtWidgets import QGroupBox, QGridLayout, QHBoxLayout, QLabel, QComboBox
 from PyQt6.QtCore import Qt
 

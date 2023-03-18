@@ -5,7 +5,7 @@ from PyQt6.QtWidgets import (
   QSizePolicy, QComboBox, QLineEdit, QHBoxLayout, QFileDialog, QDialog, QVBoxLayout, QHBoxLayout, QMessageBox
 )
 from helpers.capitalize_text import capitalize_text
-from interface.start import MainWindow
+from interface.selection_window import MainWindow
 
 # #: ВЫЗОВ КОДА ТОЛЬКО В ЭТОМ ФАЙЛЕ ЕСЛИ ОН ЯВЛЯЕТСЯ ИСПОЛНЯЕМЫМ
 if __name__ == "__main__":
