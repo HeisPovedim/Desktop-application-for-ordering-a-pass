@@ -4,6 +4,12 @@
 /.idea/
 
 assets/files/individual_visit_window/pdf/**
-assets/files/group_visit_window/pdf/**
+!assets/files/individual_visit_window/pdf/.gitkeep
+
 assets/files/group_visit_window/xlsx/**
+!assets/files/group_visit_window/xlsx/.gitkeep
+
+assets/files/group_visit_window/pdf/**
+!assets/files/group_visit_window/pdf/.gitkeep
+
 **/__pycache__/

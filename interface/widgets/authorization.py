@@ -80,7 +80,6 @@ class Authorization(QMainWindow):
         result = self.cursor.fetchone()
 
         if result:
-          QMessageBox.information(self, "Успех", "Вы вошли.")
           self.open_selection_window()
         else:
           QMessageBox.warning(self, "Ошибка", "Неверный логин или пароль!")
@@ -108,3 +107,4 @@ class Authorization(QMainWindow):
     self.selection_window.show()
     self.db.close()
     self.reset_fields()
+    QMessageBox.information(self, "Успех", "Вы вошли.")

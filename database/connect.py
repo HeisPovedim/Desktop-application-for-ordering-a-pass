@@ -1,5 +1,5 @@
 import mysql.connector
-from .config import *
+from database.config import *
 
 class DB(object):
   def __init__(self):
@@ -12,6 +12,7 @@ class DB(object):
 
     # курсор для выполнения запросов
     self.cursor = self.connect.cursor()
+    self.cursor_dictionary = self.connect.cursor(dictionary=True)
     
     if self.connect.is_connected():
       print("Connected to MySQL Database")
