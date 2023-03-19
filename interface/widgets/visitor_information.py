@@ -10,11 +10,12 @@ from PyQt6.QtCore import Qt, QRegularExpression, QDate
 import re
 
 class VisitorInformation(QGroupBox):
-  def __init__(self):
+  def __init__(self, display_photo):
     super().__init__()
     self.setTitle("Информация о посетителе")
 
     # Инициализация переменных
+    self.display_photo = display_photo
     self.selectedAilesLbl = None
     self.number = None
     self.email = None
@@ -31,34 +32,35 @@ class VisitorInformation(QGroupBox):
     
     self.initGUI()
   def initGUI(self):
-    grid = QGridLayout()                          # создание сетки
-    grid.setAlignment(Qt.AlignmentFlag.AlignTop)  # выравнивание по верху группового блока
-    self.setLayout(grid)                          # добавление сетки в групповой блок
-  
-    # Окно с картинкой и полем загрузить фотографию
-    group_photo = QVBoxLayout()
-
-    # фотография
-    self.photo = QLabel()
-    self.photo.setFixedSize(200, 200)
-    self.photo.setPixmap(QPixmap("./assets/img/one.jpg"))
-    self.photo.setScaledContents(True)
-    group_photo.addWidget(self.photo)
-    group_photo.setAlignment(
-      self.photo, Qt.AlignmentFlag.AlignHCenter
-    )
+    grid = QGridLayout()                         # создание сетки
+    grid.setAlignment(Qt.AlignmentFlag.AlignTop) # выравнивание по верху группового блока
+    self.setLayout(grid)                         # добавление сетки в групповой блок
     
-    # кнопка "Загрузить фото"
-    button = QPushButton("Загрузить фото")
-    button.setFixedWidth(100)
-    button.clicked.connect(self.load_image)
-    group_photo.addWidget(button)
-    group_photo.setAlignment(
-      button, Qt.AlignmentFlag.AlignHCenter
-    )
+    if self.display_photo:
+      # Окно с картинкой и полем загрузить фотографию
+      group_photo = QVBoxLayout()
   
-    grid.addLayout(group_photo, 0, 4, 6, 1)
-  
+      # фотография
+      self.photo = QLabel()
+      self.photo.setFixedSize(200, 200)
+      self.photo.setPixmap(QPixmap("./assets/img/one.jpg"))
+      self.photo.setScaledContents(True)
+      group_photo.addWidget(self.photo)
+      group_photo.setAlignment(
+        self.photo, Qt.AlignmentFlag.AlignHCenter
+      )
+      
+      # кнопка "Загрузить фото"
+      button = QPushButton("Загрузить фото")
+      button.setFixedWidth(100)
+      button.clicked.connect(self.load_image)
+      group_photo.addWidget(button)
+      group_photo.setAlignment(
+        button, Qt.AlignmentFlag.AlignHCenter
+      )
+    
+      grid.addLayout(group_photo, 0, 4, 6, 1)
+    
     INPUT_LENGTH = 50
   
     # "Фамилия" && "Организация"

@@ -79,10 +79,7 @@ class Registrations(QMainWindow):
 
     if (login and password and repeat_password) != "":
       if password == repeat_password:
-        hashed_password = hashlib.sha256((login + password).encode()).hexdigest()  # хеширование пароля
-
-        # запрос на регистрацию нового пользователя
-        query = f"INSERT INTO users (login, password) VALUES ('{login}', '{hashed_password}')"
+        hashed_password = hashlib.sha256((login + password).encode()).hexdigest() # хеширование пароля
 
         # проверяем, что пользователь с таким логином еще не зарегистрирован
         check_query = f"SELECT * FROM users WHERE login='{login}'"
