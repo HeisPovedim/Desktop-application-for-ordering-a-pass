@@ -1,6 +1,7 @@
 /venv/
 /.vscode/
 /.fleet/
+/.idea/
 
 assets/files/individual_visit_window/pdf_files/**
 **/__pycache__/

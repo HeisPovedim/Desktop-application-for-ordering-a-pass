@@ -6,29 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2cdf6309-ca4e-4e88-8f98-4fbdd3f675ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/files/individual_visit_window/pdf_files/73e93cd4ad611945923257d2eb81f1d89fa8c2189967ab968bac9fb4e365d1e0.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/assets/files/individual_visit_window/pdf_files/73e93cd4ad611945923257d2eb81f1d89fa8c2189967ab968bac9fb4e365d1e0.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/files/individual_visit_window/pdf_files/9a50143b832d4399a54a0fafcae917f8ef15ba89ff12d1fca322e4f81ea8ed56.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/assets/files/individual_visit_window/pdf_files/9a50143b832d4399a54a0fafcae917f8ef15ba89ff12d1fca322e4f81ea8ed56.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/files/individual_visit_window/pdf_files/d0e990e6f7bd902f6a4ade52b97d67600bc4bce1f03973783ebd34bbdffb6db6.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/assets/files/individual_visit_window/pdf_files/d0e990e6f7bd902f6a4ade52b97d67600bc4bce1f03973783ebd34bbdffb6db6.pdf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/group.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/assets/img/group.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/img/icon.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/img/one.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/assets/img/one.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/install-1.3.5-py3-none-any.whl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/individual_visit_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/individual_visit_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/selection_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/selection_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/widgets/authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/widgets/authorization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/widgets/photo_and_signature.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/widgets/photo_and_signature.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/widgets/registrations.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/widgets/registrations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/interface/widgets/visitor_information.py" beforeDir="false" afterPath="$PROJECT_DIR$/interface/widgets/visitor_information.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mydb" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Models.mwb" beforeDir="false" afterPath="$PROJECT_DIR$/database/Models.mwb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/Models.mwb.bak" beforeDir="false" afterPath="$PROJECT_DIR$/database/Models.mwb.bak" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/SQL.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/SQL.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/SQL_Script.sql" beforeDir="false" afterPath="$PROJECT_DIR$/database/SQL_Script.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/connect_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/connect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,14 +31,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "D:/Project/GitHub/Web-service-for-ordering-a-pass/main2.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PythonContentEntriesConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Project/GitHub/Web-service-for-ordering-a-pass/main2.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PythonContentEntriesConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Project\GitHub\Desktop-application-for-ordering-a-pass\assets" />
