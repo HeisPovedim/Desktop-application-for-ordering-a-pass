@@ -116,10 +116,3 @@ class Registrations(QMainWindow):
     self.db.close()
     self.reset_fields()
     self.receiving_party.show()
-
-  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
-  def closeEvent(self, event):
-    self.close()
-    self.db.close()
-    self.reset_fields()
-    self.receiving_party.show()

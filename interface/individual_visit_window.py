@@ -44,7 +44,7 @@ class PersonalWindow(QMainWindow):
     self.cursor = self.db.cursor
 
     # Получение текущего ID пользователя
-    self.username = user["username"]
+    self.username = user['username']
     query = f"SELECT id FROM users WHERE login='{self.username}'"
     self.cursor.execute(query)
     self.userId = self.cursor.fetchone()
@@ -202,10 +202,5 @@ class PersonalWindow(QMainWindow):
 
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
+    self.close()
     self.start_window.show()
-    self.hide()
-
-  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
-  def closeEvent(self, event):
-    self.start_window.show()
-    self.hide()

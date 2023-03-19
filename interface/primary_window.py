@@ -1,6 +1,7 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QWidget, QPushButton, QGridLayout
 
+# WIDGETS
 from interface.widgets.authorization import Authorization
 from interface.widgets.registrations import Registrations
 

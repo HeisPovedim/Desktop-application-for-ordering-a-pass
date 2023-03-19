@@ -1,9 +1,9 @@
 from PyQt6.QtWidgets import QMainWindow, QPushButton
 
 class GroupVisit(QMainWindow):
-  def __init__(self,start_window):
+  def __init__(self, start_window):
     super().__init__()
-    
+
     self.setFixedSize(600, 400)
     # self.setCentralWidget(QWidget())
     
@@ -16,10 +16,5 @@ class GroupVisit(QMainWindow):
     
   def show_main_window(self):
     # показываем главное окно и закрываем новое окно
-    self.start_window.show()
-    self.hide()
-
-  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
-  def closeEvent(self, event):
     self.start_window.show()
     self.hide()

@@ -1,44 +1,55 @@
-from PyQt6.QtWidgets import QLabel, QMainWindow, QWidget
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap, QIcon
+from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QPushButton
+from PyQt6.QtGui import QIcon
 
+from interface.widgets.photo_and_signature import PhotoAndSignature
 from interface.individual_visit_window import PersonalWindow
 from interface.group_visit_window import GroupVisit
 
+from data.user import user
+
 class SelectionWindow(QMainWindow):
-  def __init__(self):
+  def __init__(self, primary_window):
     super().__init__()
-    
-    # задаем фиксированный размер главного окна и его заголовок
+
+    # Создаем новое окно и задаем ему фиксированный размер с заголовком
     self.setWindowTitle("IDVisitor")
     self.setWindowIcon(QIcon("./img/icon.png"))
     self.setFixedSize(600, 400)
+    self.setCentralWidget(QWidget())
 
-    # создаем виджет, на котором будут расположены картинки и подписи
-    widget = QWidget(self)
-    self.setCentralWidget(widget)
+    # Инициализация переменных
+    self.photo_and_signature = PhotoAndSignature()
+    self.primary_window = primary_window
+    self.group_signature = None
+    self.group_photo = None
+    self.individual_signature = None
+    self.individual_photo = None
 
-    # создаем картинки и подписи
-    self.label1 = QLabel(widget)
-    self.label1.setPixmap(QPixmap("./img/one.jpg").scaled(250, 250, transformMode= Qt.TransformationMode.SmoothTransformation))
-    self.label1.move(25, 50)
-    self.caption1 = QLabel("Личное посещение", widget)
-    self.caption1.move(105, 315)
+    self.initGUI()
 
-    self.label2 = QLabel(widget)
-    self.label2.setPixmap(QPixmap("./img/group.jpg").scaled(250, 250, transformMode = Qt.TransformationMode.SmoothTransformation))
-    self.label2.move(325, 50)
-    self.caption2 = QLabel("Групповое посещение", widget)
-    self.caption2.move(405, 315)
+  def initGUI(self):
+    grid = QGridLayout()
 
-    # привязываем к картинкам события
-    self.label1.mousePressEvent = lambda event: self.individual_visit_window()
-    self.label2.mousePressEvent = lambda event: self.group_visit_window()
-  
+    grid.addLayout(self.photo_and_signature, 0, 0)
+    self.photo_and_signature.individual_photo.mousePressEvent = lambda event: self.individual_visit_window()
+    self.photo_and_signature.group_photo.mousePressEvent = lambda event: self.group_visit_window()
+
+    button = QPushButton("Назад")
+    button.clicked.connect(lambda: self.return_back())
+    grid.addWidget(button, 1, 0)
+
+    self.centralWidget().setLayout(grid)
+
   def individual_visit_window(self):
-    self.hide()
+    self.close()
     PersonalWindow(self).show()
-    
+
   def group_visit_window(self):
-    self.hide()
+    self.close()
     GroupVisit(self).show()
+
+  # ВОЗВРАЩЕНИЕ К ПРЕДЫДУЩЕМУ ОКНУ
+  def return_back(self):
+    self.close()
+    user["username"] = ""
+    self.primary_window.show()

@@ -410,11 +410,6 @@ class PersonalWindow(QMainWindow):
       self.cursor.execute(sql,val)
       self.connect.commit()
       QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
-      
-  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
-  def closeEvent(self, event):
-    self.start_window.show()
-    self.hide()
 
   def validate_input(self):
     text = self.receivingParty_fio.text().strip()

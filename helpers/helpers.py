@@ -1,5 +1,7 @@
-from PyQt6.QtCore import QDate
-from PyQt6.QtWidgets import QDateEdit
+from PyQt6.QtCore import QDate, Qt
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QDateEdit, QVBoxLayout, QLabel
+
 
 # Автоматическое добавление виджетов
 def add_widgets_to_layout(layout, widgets):

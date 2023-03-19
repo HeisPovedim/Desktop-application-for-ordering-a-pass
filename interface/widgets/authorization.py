@@ -16,7 +16,7 @@ from data.user import user
 import hashlib
 
 class Authorization(QMainWindow):
-  def __init__(self, receiving_party):
+  def __init__(self, primary_window):
     super().__init__()
 
     # Настройки окна
@@ -25,7 +25,8 @@ class Authorization(QMainWindow):
     self.setCentralWidget(QWidget())
 
     # Инициализация переменных
-    self.receiving_party = receiving_party # класс "Первичное окно"
+    self.primary_window = primary_window # класс "Первичное окно"
+    self.selection_window = None
     self.input_login = None
     self.input_password = None
 
@@ -96,20 +97,14 @@ class Authorization(QMainWindow):
     self.close()
     self.db.close()
     self.reset_fields()
-    self.receiving_party.show()
-
-  # СОБЫТИЕ НА ЗАКРЫТИЕ ОКНА
-  def closeEvent(self, event):
-    self.close()
-    self.db.close()
-    self.reset_fields()
-    self.receiving_party.show()
+    self.primary_window.show()
 
   # ПЕРЕХОД К ОКНУ ВЫБОРА
   def open_selection_window(self):
     user["username"] = self.input_login.text()
     self.close()
+    self.primary_window.close()
+    self.selection_window = SelectionWindow(self.primary_window)
+    self.selection_window.show()
     self.db.close()
     self.reset_fields()
-    self.receiving_party.close()
-    SelectionWindow().show()
