@@ -11,7 +11,7 @@ from interface.widgets.buttons import Buttons
 from helpers.helpers import *
 
 # DATABASE
-from database.connect import DB
+from database.requests import *
 from data.user import user
 
 # LIBRARIES
@@ -22,7 +22,7 @@ import re
 import os
 
 class IndividualVisit(QMainWindow):
-  def __init__(self, start_window):
+  def __init__(self, selection_window):
     super().__init__()
 
     # Настройка окна
@@ -31,7 +31,7 @@ class IndividualVisit(QMainWindow):
     self.setCentralWidget(QWidget())
 
     # Инициализация окон и виджетов
-    self.start_window = start_window
+    self.selection_window = selection_window
     self.information_for_the_pass = InformationPass()
     self.receiving_party = ReceivingParty()
     self.visitor_information = VisitorInformation(True)
@@ -69,6 +69,7 @@ class IndividualVisit(QMainWindow):
 
   # ОБРАБОТКИ ФОРМЫ
   def make_application(self):
+  
     blank_fields = []  # массив, куда мы будем записывать наши не заполненные поля
     form_valid = True  # формат проверки
 
@@ -156,29 +157,8 @@ class IndividualVisit(QMainWindow):
       if len(re.sub(r'[^\d+]', '', self.visitor_information.phone.text())) == 12:
         phone_valid = re.sub(r'[^\d+]', '', self.visitor_information.phone.text())
 
-      # Сохранение в базу данных
-      sql = "INSERT INTO personal_visit(" \
-              "users_id," \
-              "validity_period_from," \
-              "validity_period_for," \
-              "purpose_of_the_visit," \
-              "division," \
-              "FIO," \
-              "surname," \
-              "name," \
-              "patronymic," \
-              "phone," \
-              "email," \
-              "organization," \
-              "note," \
-              "birthdate," \
-              "passport_series," \
-              "passport_number," \
-              "document," \
-              "photo" \
-            ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-      val = (
-        self.userId[0],
+      # Последовательное добавление данных в БД
+      addIndividualVisits(
         self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.comboBox.currentText(),
@@ -195,13 +175,13 @@ class IndividualVisit(QMainWindow):
         self.visitor_information.series.text(),
         self.visitor_information.number.text(),
         hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
-        self.visitor_information.file_photo
+        self.visitor_information.file_photo,
+        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
-      self.cursor.execute(sql, val)
-      self.connect.commit()
+      
       QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
 
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
     self.close()
-    self.start_window.show()
+    self.selection_window.show()

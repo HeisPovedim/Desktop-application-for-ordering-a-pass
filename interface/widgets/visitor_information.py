@@ -102,7 +102,7 @@ class VisitorInformation(QGroupBox):
     grid.addWidget(self.patronymic, 2, 1)
     
     grid.addWidget(QLabel("Дата рождения:"), 2, 2)
-    self.birthdate = QDateEdit() ; self.birthdate.setCalendarPopup(True)
+    self.birthdate = QDateEdit(); self.birthdate.setCalendarPopup(True)
     self.birthdate.setMaximumDate(QDate.currentDate().addYears(-16))
     grid.addWidget(self.birthdate, 2, 3)
     

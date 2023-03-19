@@ -11,7 +11,7 @@ def add_widgets_to_layout(layout, widgets):
 # Создание поля с датой
 def create_date_edit_with():
   date_edit = QDateEdit()
-  date_edit.setCalendarPopup(True)  # включение календаря
+  date_edit.setCalendarPopup(True) # включение календаря
   date_edit.setMinimumDate(QDate.currentDate()) # выбор даты не меньше текущей
   date_edit.setMaximumDate( # макс можно выбрать на 15 вперед от текущей даты
     QDate.currentDate().addDays(15)

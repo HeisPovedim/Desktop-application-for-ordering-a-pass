@@ -12,7 +12,7 @@ from interface.widgets.buttons import Buttons
 from helpers.helpers import *
 
 # DATABASE
-from database.connect import DB
+from database.requests import *
 from data.user import user
 
 # LIBRARIES
@@ -23,7 +23,7 @@ import re
 import os
 
 class GroupVisit(QMainWindow):
-  def __init__(self, start_window):
+  def __init__(self, selection_window):
     super().__init__()
 
     # Настройка окна
@@ -32,7 +32,7 @@ class GroupVisit(QMainWindow):
     self.setCentralWidget(QWidget())
 
     # Инициализация окон и виджетов
-    self.start_window = start_window
+    self.selection_window = selection_window
     self.information_for_the_pass = InformationPass()
     self.receiving_party = ReceivingParty()
     self.visitor_information = VisitorInformation(False)
@@ -176,6 +176,28 @@ class GroupVisit(QMainWindow):
       phone_valid = ""
       if len(re.sub(r'[^\d+]', '', self.visitor_information.phone.text())) == 12:
         phone_valid = re.sub(r'[^\d+]', '', self.visitor_information.phone.text())
+
+      # Последовательное добавление данных в БД
+      addGroupVisits(
+        self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
+        self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
+        self.information_for_the_pass.comboBox.currentText(),
+        self.receiving_party.comboBox.currentText(),
+        self.receiving_party.fio.text(),
+        self.visitor_information.surname.text(),
+        self.visitor_information.name.text(),
+        self.visitor_information.patronymic.text(),
+        phone_valid,
+        self.visitor_information.email.text(),
+        self.visitor_information.organization.text(),
+        self.visitor_information.note.text(),
+        self.visitor_information.birthdate.date().toString("yyyy-MM-dd"),
+        self.visitor_information.series.text(),
+        self.visitor_information.number.text(),
+        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
+        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
+        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
+      )
   
       # Сохранение в базу данных
       sql = "INSERT INTO group_visit(" \
@@ -196,8 +218,9 @@ class GroupVisit(QMainWindow):
             "passport_series," \
             "passport_number," \
             "document," \
-            "list_visitors" \
-            ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
+            "list_visitors," \
+            "creation_time" \
+            ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = (
         self.userId[0],
         self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
@@ -216,13 +239,13 @@ class GroupVisit(QMainWindow):
         self.visitor_information.series.text(),
         self.visitor_information.number.text(),
         hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
-        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest()
+        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
+        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
-      self.cursor.execute(sql, val)
-      self.connect.commit()
+      
       QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
     
   def show_main_window(self):
     # показываем главное окно и закрываем новое окно
-    self.start_window.show()
+    self.selection_window.show()
     self.hide()
