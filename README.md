@@ -9,48 +9,57 @@ ___
 Проект следует запускать через файл - `executable.py`
 ```
 Desktop-application-for-ordering-a-pass
+├─ assets
 ├─ data
-├─ files
+├─ database
 ├─ helpers
-├─ img
 ├─ interface
-├─ mysql
-└─ executable.py ←-THIS
+├─ executable.py ←-THIS
+├─ README.md
+└─ venv_activate.bat
 ```
 Для запуска проекта необходимо находится в коневой папке **Desktop-application-for-ordering-a-pass**.</br>
 После мы открываем командную строку в нашей папке или с помощью команды **cd** переходим к нашему проекту (пример: `cd D:\Project\GitHub\Desktop-application-for-ordering-a-pass`) и запускаем скрипт путем ввода в консоль команды: `python.exe executable.py`
+
+Также перед запуском проекта в обязательном порядке нужно изменить импорты и конфигурацию подключения к БД.
+1. Импорты:</br>
+    Файлы, в которых нужно изменить импорты:</br>
+    `interface\individual_visit_window.py` строка 142
+
+2. Конфигурация подключения к БД:</br>
+    Настройка конфигурации находят в `database/config.py`.
 
 ## Настройка БД для проекта
 Для быстрого развертывания понадобится программа [**MySQL Workbench**](https://www.mysql.com/products/workbench/). С помощью неё можно быстро и легко через графический интерфейс управлять базой данных, а также создавать модели ER диаграмм, который в последующем можно преобразовывать в SQL скрипты.
 
 ### 1. Автоматическое развертывание через SQL Script
 
-В проекте присутствует **SQL_Script.sql** для быстрого развертывания БД. Чтобы загрузить скрипт для этого в программе [**MySQL Workbench**](https://www.mysql.com/products/workbench/) нажимаем на **File** в левом верхнем углу и выбираем пункт **Open SQL Script...** , выбираем файл **SQL_Script.sql** и открываем его. После открытия файлы в области редактирования кода на верхней панели инструментов выполняем скрипт ( значок молнии на панели инструментов ).</br>
+В проекте присутствует **SQL_Script.sql** для быстрого развертывания БД. Чтобы загрузить скрипт для этого в программе [**MySQL Workbench**](https://www.mysql.com/products/workbench/) нажимаем на **File** в левом верхнем углу и выбираем пункт **Open SQL Script...** , выбираем файл **SQL_Script.sql** и открываем его. После открытия файла в области редактирования кода на верхней панели инструментов выполняем скрипт (значок молнии на панели инструментов).</br>
 <a href="https://gifyu.com/image/SIp1X"><img src="https://s2.gifyu.com/images/ezgif.com-video-to-gif5e6f78bebade03c2.gif" alt="ezgif.com-video-to-gif5e6f78bebade03c2.gif" border="0" /></a></br>
 Путь до файла **SQL_Script.sql**:
 
 ```
 Desktop-application-for-ordering-a-pass
+├─ assets
 ├─ data
-├─ files
-├─ helpers
-├─ img
-├─ interface
-├─ mysql
+├─ database
 │  ├─ config.py
 │  ├─ connect_db.py
 │  ├─ Models.mwb
 │  ├─ Models.mwb.bak
 │  ├─ SQL_Script.sql ←-THIS
 │  └─ SQL.sql
-├─ __init__.py
-└─ executable.py
+├─ helpers
+├─ interface
+├─ executable.py ←-THIS
+├─ README.md
+└─ venv_activate.bat
 ```
 
 ### 2. Готовые скрипт
 
 Я могу забыть поменять скрипт в описании проекта, поэтому если у вас что-то будет не работать советую следовать первому пункту.</br>
-Для того чтобы загрузить скрипт нажимаем на **File** в левом верхнем углу и выбираем пункт **New Query Tab**. В новое открывшееся окно вставляем скрипт и в области редактирования кода на верхней панели инструментов выполняем его ( значок молнии на панели инструментов ).</br>
+Для того чтобы загрузить скрипт нажимаем на **File** в левом верхнем углу и выбираем пункт **New Query Tab**. В новое открывшееся окно вставляем скрипт и в области редактирования кода на верхней панели инструментов выполняем его (значок молнии на панели инструментов).</br>
 <a href="https://gifyu.com/image/SIpAJ"><img src="https://s2.gifyu.com/images/ezgif.com-video-to-gif-1aeaaef424d4b758d.gif" alt="ezgif.com-video-to-gif-1aeaaef424d4b758d.gif" border="0" /></a></br>
 Скрипт который нужно вставить:
 
@@ -122,5 +131,4 @@ ENGINE = InnoDB;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
 ```

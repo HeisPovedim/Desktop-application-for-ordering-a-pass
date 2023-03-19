@@ -11,7 +11,7 @@ from interface.widgets.buttons import Buttons
 from helpers.helpers import *
 
 # DATABASE
-from MySQL.connect_db import DB
+from database.connect import DB
 from data.user import user
 
 # LIBRARIES
@@ -139,7 +139,7 @@ class PersonalWindow(QMainWindow):
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Web-service-for-ordering-a-pass/files/individual_visit_window/pdf_files",
+          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf_files",
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:

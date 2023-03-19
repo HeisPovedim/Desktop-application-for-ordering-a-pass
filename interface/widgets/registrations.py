@@ -6,7 +6,7 @@ from PyQt6.QtCore import Qt
 from helpers.regulars import *
 
 # DATABASE
-from MySQL.connect_db import DB
+from database.connect import DB
 
 # LIBRARIES
 import hashlib

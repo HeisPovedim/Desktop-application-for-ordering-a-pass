@@ -1,5 +1,4 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QPushButton
-from PyQt6.QtGui import QIcon
 
 from interface.widgets.photo_and_signature import PhotoAndSignature
 from interface.individual_visit_window import PersonalWindow
@@ -13,7 +12,6 @@ class SelectionWindow(QMainWindow):
 
     # Создаем новое окно и задаем ему фиксированный размер с заголовком
     self.setWindowTitle("IDVisitor")
-    self.setWindowIcon(QIcon("./img/icon.png"))
     self.setFixedSize(600, 400)
     self.setCentralWidget(QWidget())
 
@@ -34,7 +32,7 @@ class SelectionWindow(QMainWindow):
     self.photo_and_signature.individual_photo.mousePressEvent = lambda event: self.individual_visit_window()
     self.photo_and_signature.group_photo.mousePressEvent = lambda event: self.group_visit_window()
 
-    button = QPushButton("Назад")
+    button = QPushButton("Назад"); button.setFixedHeight(30)
     button.clicked.connect(lambda: self.return_back())
     grid.addWidget(button, 1, 0)
 

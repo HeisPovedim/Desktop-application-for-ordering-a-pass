@@ -36,15 +36,15 @@ class VisitorInformation(QGroupBox):
     self.setLayout(grid)                          # добавление сетки в групповой блок
   
     # Окно с картинкой и полем загрузить фотографию
-    qvboxLayout = QVBoxLayout()
+    group_photo = QVBoxLayout()
 
     # фотография
     self.photo = QLabel()
     self.photo.setFixedSize(200, 200)
-    self.photo.setPixmap(QPixmap("./img/one.jpg"))
+    self.photo.setPixmap(QPixmap("./assets/img/one.jpg"))
     self.photo.setScaledContents(True)
-    qvboxLayout.addWidget(self.photo)
-    qvboxLayout.setAlignment(
+    group_photo.addWidget(self.photo)
+    group_photo.setAlignment(
       self.photo, Qt.AlignmentFlag.AlignHCenter
     )
     
@@ -52,12 +52,12 @@ class VisitorInformation(QGroupBox):
     button = QPushButton("Загрузить фото")
     button.setFixedWidth(100)
     button.clicked.connect(self.load_image)
-    qvboxLayout.addWidget(button)
-    qvboxLayout.setAlignment(
+    group_photo.addWidget(button)
+    group_photo.setAlignment(
       button, Qt.AlignmentFlag.AlignHCenter
     )
   
-    grid.addLayout(qvboxLayout, 0, 4, 6, 1)
+    grid.addLayout(group_photo, 0, 4, 6, 1)
   
     INPUT_LENGTH = 50
   

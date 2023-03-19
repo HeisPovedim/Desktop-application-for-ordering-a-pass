@@ -9,7 +9,7 @@ from interface.selection_window import SelectionWindow
 from helpers.regulars import *
 
 # DATABASE
-from MySQL.connect_db import DB
+from database.connect import DB
 from data.user import user
 
 # LIBRARIES

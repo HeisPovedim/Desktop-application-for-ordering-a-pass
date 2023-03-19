@@ -19,7 +19,7 @@ class PhotoAndSignature(QGridLayout):
     
     self.individual_photo = QLabel()
     self.individual_photo.setPixmap(
-      QPixmap("./img/one.jpg").scaled(250, 250, transformMode=Qt.TransformationMode.SmoothTransformation)
+      QPixmap("./assets/img/one.jpg").scaled(250, 250, transformMode=Qt.TransformationMode.SmoothTransformation)
     )
     self.individual_signature = QLabel("Личное посещение")
 
@@ -30,7 +30,7 @@ class PhotoAndSignature(QGridLayout):
 
     self.group_photo = QLabel()
     self.group_photo.setPixmap(
-      QPixmap("./img/group.jpg").scaled(250, 250, transformMode=Qt.TransformationMode.SmoothTransformation)
+      QPixmap("./assets/img/group.jpg").scaled(250, 250, transformMode=Qt.TransformationMode.SmoothTransformation)
     )
     self.group_signature = QLabel("Групповое посещение")
 
