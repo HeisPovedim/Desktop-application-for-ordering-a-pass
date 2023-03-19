@@ -3,5 +3,7 @@
 /.fleet/
 /.idea/
 
-assets/files/individual_visit_window/pdf_files/**
+assets/files/individual_visit_window/pdf/**
+assets/files/group_visit_window/pdf/**
+assets/files/group_visit_window/xlsx/**
 **/__pycache__/

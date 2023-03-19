@@ -21,11 +21,11 @@ import hashlib
 import re
 import os
 
-class PersonalWindow(QMainWindow):
+class IndividualVisit(QMainWindow):
   def __init__(self, start_window):
     super().__init__()
 
-    # Создаем новое окно и задаем ему фиксированный размер с заголовком
+    # Настройка окна
     self.setWindowTitle("IDVisitor")
     self.setFixedSize(1000, 700)
     self.setCentralWidget(QWidget())
@@ -34,7 +34,7 @@ class PersonalWindow(QMainWindow):
     self.start_window = start_window
     self.information_for_the_pass = InformationPass()
     self.receiving_party = ReceivingParty()
-    self.visitor_information = VisitorInformation()
+    self.visitor_information = VisitorInformation(True)
     self.attaching_documents = AttachingDocuments()
     self.buttons = Buttons()
 
@@ -139,7 +139,7 @@ class PersonalWindow(QMainWindow):
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf_files",
+          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf",
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:
@@ -170,10 +170,11 @@ class PersonalWindow(QMainWindow):
               "phone," \
               "email," \
               "organization," \
-              "note,birthdate," \
+              "note," \
+              "birthdate," \
               "passport_series," \
               "passport_number," \
-              "document_name," \
+              "document," \
               "photo" \
             ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
       val = (
@@ -193,7 +194,7 @@ class PersonalWindow(QMainWindow):
         self.visitor_information.birthdate.date().toString("yyyy-MM-dd"),
         self.visitor_information.series.text(),
         self.visitor_information.number.text(),
-        self.attaching_documents.file_document_name,
+        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
         self.visitor_information.file_photo
       )
       self.cursor.execute(sql, val)

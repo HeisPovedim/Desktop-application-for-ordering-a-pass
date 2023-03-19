@@ -18,7 +18,7 @@ Desktop-application-for-ordering-a-pass
 ├─ README.md
 └─ venv_activate.bat
 ```
-Для запуска проекта необходимо находится в коневой папке **Desktop-application-for-ordering-a-pass**.</br>
+Для запуска проекта необходимо находиться в корневой папке **Desktop-application-for-ordering-a-pass**.</br>
 После мы открываем командную строку в нашей папке или с помощью команды **cd** переходим к нашему проекту (пример: `cd D:\Project\GitHub\Desktop-application-for-ordering-a-pass`) и запускаем скрипт путем ввода в консоль команды: `python.exe executable.py`
 
 Также перед запуском проекта в обязательном порядке нужно изменить импорты и конфигурацию подключения к БД.

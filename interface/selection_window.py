@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QPushButton
 
 from interface.widgets.photo_and_signature import PhotoAndSignature
-from interface.individual_visit_window import PersonalWindow
+from interface.individual_visit_window import IndividualVisit
 from interface.group_visit_window import GroupVisit
 
 from data.user import user
@@ -40,7 +40,7 @@ class SelectionWindow(QMainWindow):
 
   def individual_visit_window(self):
     self.close()
-    PersonalWindow(self).show()
+    IndividualVisit(self).show()
 
   def group_visit_window(self):
     self.close()
