@@ -7,6 +7,9 @@ from interface.widgets.visitor_information import VisitorInformation
 from interface.widgets.attaching_documents import AttachingDocuments
 from interface.widgets.buttons import Buttons
 
+# CONFIGURATIONS
+from configurations.path import *
+
 # HELPERS
 from helpers.helpers import *
 
@@ -140,7 +143,7 @@ class IndividualVisit(QMainWindow):
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf",
+          INDIVIDUAL_VISIT_WINDOW_PDF,
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:

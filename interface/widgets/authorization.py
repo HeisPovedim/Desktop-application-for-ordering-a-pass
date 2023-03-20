@@ -107,4 +107,3 @@ class Authorization(QMainWindow):
     self.selection_window.show()
     self.db.close()
     self.reset_fields()
-    QMessageBox.information(self, "Успех", "Вы вошли.")

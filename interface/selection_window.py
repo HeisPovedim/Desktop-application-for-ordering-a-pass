@@ -39,7 +39,7 @@ class SelectionWindow(QMainWindow):
     grid.addWidget(button_back, 1, 0)
     
     button_personal_account = QPushButton("Личный кабинет"); button_personal_account.setFixedHeight(30)
-    button_personal_account.clicked.connect(lambda: self.personal_account())
+    button_personal_account.clicked.connect(lambda: self.personal_account_show())
     grid.addWidget(button_personal_account, 1, 1)
 
     self.centralWidget().setLayout(grid)
@@ -52,10 +52,9 @@ class SelectionWindow(QMainWindow):
     self.close()
     GroupVisit(self).show()
 
-  def personal_account(self):
+  def personal_account_show(self):
     self.close()
-    window = PersonalAccount(self)
-    window.show()
+    PersonalAccount(self).show()
 
   # ВОЗВРАЩЕНИЕ К ПРЕДЫДУЩЕМУ ОКНУ
   def return_back(self):

@@ -8,6 +8,10 @@ from interface.widgets.attaching_documents import AttachingDocuments
 from interface.widgets.list_of_visitors import ListOfVisitors
 from interface.widgets.buttons import Buttons
 
+# CONFIGURATIONS
+from configurations.path import *
+
+
 # HELPERS
 from helpers.helpers import *
 
@@ -145,7 +149,7 @@ class GroupVisit(QMainWindow):
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/group_visit_window/pdf",
+          GROUP_VISIT_WINDOW_PDF,
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:
@@ -160,7 +164,7 @@ class GroupVisit(QMainWindow):
       # Cохранение списка посетителей на компьютере
       if self.list_of_visitors.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/group_visit_window/xlsx",
+          GROUP_VISIT_WINDOW_XLSX,
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".xlsx"
         )
         try:
@@ -179,50 +183,6 @@ class GroupVisit(QMainWindow):
 
       # Последовательное добавление данных в БД
       addGroupVisits(
-        self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
-        self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
-        self.information_for_the_pass.comboBox.currentText(),
-        self.receiving_party.comboBox.currentText(),
-        self.receiving_party.fio.text(),
-        self.visitor_information.surname.text(),
-        self.visitor_information.name.text(),
-        self.visitor_information.patronymic.text(),
-        phone_valid,
-        self.visitor_information.email.text(),
-        self.visitor_information.organization.text(),
-        self.visitor_information.note.text(),
-        self.visitor_information.birthdate.date().toString("yyyy-MM-dd"),
-        self.visitor_information.series.text(),
-        self.visitor_information.number.text(),
-        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
-        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
-        f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
-      )
-  
-      # Сохранение в базу данных
-      sql = "INSERT INTO group_visit(" \
-            "users_id," \
-            "validity_period_from," \
-            "validity_period_for," \
-            "purpose_of_the_visit," \
-            "division," \
-            "FIO," \
-            "surname," \
-            "name," \
-            "patronymic," \
-            "phone," \
-            "email," \
-            "organization," \
-            "note," \
-            "birthdate," \
-            "passport_series," \
-            "passport_number," \
-            "document," \
-            "list_visitors," \
-            "creation_time" \
-            ") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-      val = (
-        self.userId[0],
         self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
         self.information_for_the_pass.comboBox.currentText(),

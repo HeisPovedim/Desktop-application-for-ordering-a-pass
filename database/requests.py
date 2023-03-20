@@ -8,15 +8,13 @@ def addIndividualVisits(
     document, photo,
     current_date,
   ):
-
   db = DB()
   cursor = db.cursor_dictionary
-
+  
   username = user['username']
   query = f"SELECT id FROM users WHERE login='{username}'"
   cursor.execute(query)
   userId = cursor.fetchone()
-  
   
   # information_for_the_pass
   sql = """
@@ -208,3 +206,17 @@ def addGroupVisits(
   )
   cursor.execute(sql, val)
   db.commit()
+  
+def getting_user_information():
+  info_user = []
+  
+  db = DB()
+  cursor = db.cursor
+  
+  username = user['username']
+  
+  cursor.execute(f"SELECT id, email, login FROM users WHERE login='{username}'")
+  result = cursor.fetchall()
+  for row in result:
+    info_user.append(row)
+  return  info_user
