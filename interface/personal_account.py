@@ -1,6 +1,12 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QHBoxLayout, QPushButton, QLabel
 
+# WINDOW
+from interface.personal_applications import PersonalApplication
+
+# WIDGETS
+from interface.widgets.user_information import UserInformation
+
 # DATABASE
 from database.requests import *
 
@@ -9,12 +15,13 @@ class PersonalAccount(QMainWindow):
     super().__init__()
     
     # Настройки окна
-    self.setWindowTitle("Личный кабинет")
+    self.setWindowTitle("IDVisitor")
     self.setFixedSize(600, 400)
     self.setCentralWidget(QWidget())
 
     # Инициализация переменных
     self.selection_window = selection_window
+    self.user_information = UserInformation()
     self.info_user_arr = getting_user_information()
     
     self.initGUI()
@@ -22,21 +29,38 @@ class PersonalAccount(QMainWindow):
   def initGUI(self):
     grid = QGridLayout() # сетка
 
-    user_information = QLabel("Информация о пользователе")
-    user_information.setStyleSheet("font-size: 20px; font-weight: bold;")
-    grid.addWidget(user_information, 0, 0, 1, 3, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-    
-    info_user = QHBoxLayout()
-    info_user.addWidget(QLabel(f"Id: {self.info_user_arr[0]['id']}"))
-    info_user.addWidget(QLabel(f"Email: {self.info_user_arr[0]['email']}"))
-    info_user.addWidget(QLabel(f"Login: {self.info_user_arr[0]['login']}"))
-    grid.addLayout(info_user, 1, 0, Qt.AlignmentFlag.AlignBottom)
+    title = QLabel("Информация о пользователе")
+    title.setStyleSheet("font-size: 20px; font-weight: bold;")
+
+    btn_personal_applications = QPushButton("Личные заявки")
+    btn_personal_applications.clicked.connect(lambda: self.show_personal_applications())
+    btn_group_applications = QPushButton("Групповые заявки")
+    applications = QHBoxLayout()
+    applications.addWidget(btn_personal_applications)
+    applications.addWidget(btn_group_applications)
     
     btn_return_back = QPushButton("Назад")
     btn_return_back.clicked.connect(lambda: self.return_back())
-    grid.addWidget(btn_return_back, 2, 0, 1, 3, Qt.AlignmentFlag.AlignBottom)
+    
+    
+    # добавление к grid
+    grid.addWidget(title, 0, 0)
+    grid.addWidget(self.user_information, 1, 0)
+    grid.addLayout(applications, 2, 0)
+    grid.addWidget(btn_return_back, 3, 0)
+    
+    # настройки положения grid
+    grid.setAlignment(title, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+    grid.setAlignment(self.user_information, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+    grid.setAlignment(applications, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
+    grid.setAlignment(btn_return_back, Qt.AlignmentFlag.AlignBottom)
     
     self.centralWidget().setLayout(grid) # размещение элементов в окне
+    
+  # ОКНО ЛИЧНЫХ ЗАЯВОК
+  def show_personal_applications(self):
+    self.close()
+    PersonalApplication(self).show()
     
   # ВОЗВРАЩЕНИЕ К ПРЕДЫДУЩЕМУ ОКНУ
   def return_back(self):

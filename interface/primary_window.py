@@ -13,7 +13,6 @@ class PrimaryWindow(QMainWindow):
     self.setWindowTitle("Первичное окно")
     self.setFixedSize(300, 300)
     self.setCentralWidget(QWidget())
-
     # Инициализация переменных
     self.buttons = None
 
