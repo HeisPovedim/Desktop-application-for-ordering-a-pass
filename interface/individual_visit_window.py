@@ -7,6 +7,9 @@ from interface.widgets.visitor_information import VisitorInformation
 from interface.widgets.attaching_documents import AttachingDocuments
 from interface.widgets.buttons import Buttons
 
+# CONFIGURATIONS
+from configurations.path import *
+
 # HELPERS
 from helpers.helpers import *
 
@@ -140,7 +143,7 @@ class IndividualVisit(QMainWindow):
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf",
+          INDIVIDUAL_VISIT_WINDOW_PDF,
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:
@@ -148,9 +151,9 @@ class IndividualVisit(QMainWindow):
             data = file.read()
           with open(file_path, 'ab') as file:
             file.write(data)
-          print("Файлы успешно сохранены.")
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
+          return
 
       # Номер - убираем лишние символы и проверяем длину номера
       phone_valid = ""
@@ -179,7 +182,7 @@ class IndividualVisit(QMainWindow):
         f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
       
-      QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
+      QMessageBox.information(self, "Успех", "Валидация прошла успешно")
 
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
