@@ -6,7 +6,7 @@
 INDIVIDUAL_VISIT_WINDOW_PDF = "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/individual_visit_window/pdf"
 
 # assets/files/group_visit_window/pdf
-GROUP_VISIT_WINDOW_PDF = "DD:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/group_visit_window/pdf"
+GROUP_VISIT_WINDOW_PDF = "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/group_visit_window/pdf"
 
 # assets/files/group_visit_window/xlsx
 GROUP_VISIT_WINDOW_XLSX = "D:/Project/GitHub/Desktop-application-for-ordering-a-pass/assets/files/group_visit_window/xlsx"

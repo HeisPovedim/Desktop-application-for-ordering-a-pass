@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QHBoxLayout, QPus
 
 # WINDOW
 from interface.personal_applications import PersonalApplication
+from interface.group_applications import GroupApplication
 
 # WIDGETS
 from interface.widgets.user_information import UserInformation
@@ -32,24 +33,28 @@ class PersonalAccount(QMainWindow):
     title = QLabel("Информация о пользователе")
     title.setStyleSheet("font-size: 20px; font-weight: bold;")
 
+    # выбор типа заявки
     btn_personal_applications = QPushButton("Личные заявки")
     btn_personal_applications.clicked.connect(lambda: self.show_personal_applications())
+    
     btn_group_applications = QPushButton("Групповые заявки")
+    btn_group_applications.clicked.connect(lambda: self.show_group_applications())
+    
     applications = QHBoxLayout()
     applications.addWidget(btn_personal_applications)
     applications.addWidget(btn_group_applications)
     
+    # возвращение к предыдущему окну
     btn_return_back = QPushButton("Назад")
     btn_return_back.clicked.connect(lambda: self.return_back())
     
-    
-    # добавление к grid
+    # добавление в сетку
     grid.addWidget(title, 0, 0)
     grid.addWidget(self.user_information, 1, 0)
     grid.addLayout(applications, 2, 0)
     grid.addWidget(btn_return_back, 3, 0)
     
-    # настройки положения grid
+    # настройки положения элементов в сетке
     grid.setAlignment(title, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
     grid.setAlignment(self.user_information, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
     grid.setAlignment(applications, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignHCenter)
@@ -61,6 +66,11 @@ class PersonalAccount(QMainWindow):
   def show_personal_applications(self):
     self.close()
     PersonalApplication(self).show()
+
+  # ОКНО ГРУППОВЫХ ЗАЯВОК
+  def show_group_applications(self):
+    self.close()
+    GroupApplication(self).show()
     
   # ВОЗВРАЩЕНИЕ К ПРЕДЫДУЩЕМУ ОКНУ
   def return_back(self):

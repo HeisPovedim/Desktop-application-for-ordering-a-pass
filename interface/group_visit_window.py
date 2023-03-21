@@ -160,6 +160,7 @@ class GroupVisit(QMainWindow):
           print("Файлы успешно сохранены.")
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
+          return
 
       # Cохранение списка посетителей на компьютере
       if self.list_of_visitors.file_document:
@@ -175,6 +176,7 @@ class GroupVisit(QMainWindow):
           print("Файлы успешно сохранены.")
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
+          return
   
       # Номер - убираем лишние символы и проверяем длину номера
       phone_valid = ""
@@ -203,7 +205,7 @@ class GroupVisit(QMainWindow):
         f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
       
-      QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
+      QMessageBox.information(self, "Успех", "Валидация прошла успешно")
     
   def show_main_window(self):
     # показываем главное окно и закрываем новое окно

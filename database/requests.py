@@ -79,8 +79,6 @@ def addIndividualVisits(
   cursor.execute(sql, val)
   documents_id = cursor.lastrowid
   
-  print(information_for_the_pass_id, receiving_party_id, visitor_information_id, documents_id)
-  
   sql = """
   INSERT INTO personal_visit
   (
@@ -181,8 +179,6 @@ def addGroupVisits(
   cursor.execute(sql, val)
   documents_id = cursor.lastrowid
   
-  print(information_for_the_pass_id, receiving_party_id, visitor_information_id, documents_id)
-  
   sql = """
   INSERT INTO group_visit
   (
@@ -218,7 +214,8 @@ def getting_user_information():
   cursor.execute(f"SELECT id, email, login FROM users WHERE login='{username}'")
   return cursor.fetchone()
 
-def getting_number_personal_applications():
+# ПОЛУЧЕНИЕ ПЕРСОНАЛЬНЫХ ЗАЯВОК
+def getting_personal_applications():
   db = DB()
   cursor = db.cursor_dictionary
 
@@ -235,6 +232,33 @@ def getting_number_personal_applications():
     r.division
   FROM
     personal_visit p
+  LEFT JOIN
+    receiving_party r ON r.id = p.receiving_party_id
+  WHERE
+    p.users_id = {userId['id']}
+  """
+  
+  cursor.execute(sql)
+  return cursor.fetchall()
+
+# ПОЛУЧЕНИЕ ГРУППОВЫХ ЗАЯВОК
+def getting_group_applications():
+  db = DB()
+  cursor = db.cursor_dictionary
+  
+  username = user['username']
+  query = f"SELECT id FROM users WHERE login='{username}'"
+  cursor.execute(query)
+  userId = cursor.fetchone()
+  
+  sql = f"""
+  SELECT
+    p.receiving_party_id,
+    p.creation_time,
+    p.status,
+    r.division
+  FROM
+    group_visit p
   LEFT JOIN
     receiving_party r ON r.id = p.receiving_party_id
   WHERE

@@ -151,9 +151,9 @@ class IndividualVisit(QMainWindow):
             data = file.read()
           with open(file_path, 'ab') as file:
             file.write(data)
-          print("Файлы успешно сохранены.")
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
+          return
 
       # Номер - убираем лишние символы и проверяем длину номера
       phone_valid = ""
@@ -182,7 +182,7 @@ class IndividualVisit(QMainWindow):
         f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
       
-      QMessageBox.warning(self, "Успех", "Валидация прошла успешно")
+      QMessageBox.information(self, "Успех", "Валидация прошла успешно")
 
   # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
   def show_main_window(self):
