@@ -1,5 +1,6 @@
-from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QWidget, QPushButton, QGridLayout
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
 
 # WIDGETS
 from interface.widgets.authorization import Authorization
@@ -10,9 +11,11 @@ class PrimaryWindow(QMainWindow):
     super().__init__()
 
     # Настройки окна
-    self.setWindowTitle("Первичное окно")
+    self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(300, 300)
     self.setCentralWidget(QWidget())
+    
     # Инициализация переменных
     self.buttons = None
 

@@ -1,9 +1,13 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QPushButton
+from PyQt6.QtGui import QIcon
 
+# WIDGETS
 from interface.widgets.photo_and_signature import PhotoAndSignature
-from interface.individual_visit_window import IndividualVisit
+
+# WINDOW
+from interface.personal_visit import PersonalVisit
 from interface.personal_account import PersonalAccount
-from interface.group_visit_window import GroupVisit
+from interface.group_visit import GroupVisit
 
 # DATA
 from data.user import user
@@ -14,6 +18,7 @@ class SelectionWindow(QMainWindow):
 
     # Настройки окна
     self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(600, 400)
     self.setCentralWidget(QWidget())
 
@@ -31,7 +36,7 @@ class SelectionWindow(QMainWindow):
     grid = QGridLayout()
 
     grid.addLayout(self.photo_and_signature, 0, 0, 1, 2)
-    self.photo_and_signature.individual_photo.mousePressEvent = lambda event: self.individual_visit_window()
+    self.photo_and_signature.individual_photo.mousePressEvent = lambda event: self.personal_visit_window()
     self.photo_and_signature.group_photo.mousePressEvent = lambda event: self.group_visit_window()
 
     button_back = QPushButton("Назад"); button_back.setFixedHeight(30)
@@ -44,9 +49,9 @@ class SelectionWindow(QMainWindow):
 
     self.centralWidget().setLayout(grid)
 
-  def individual_visit_window(self):
+  def personal_visit_window(self):
     self.close()
-    IndividualVisit(self).show()
+    PersonalVisit(self).show()
 
   def group_visit_window(self):
     self.close()

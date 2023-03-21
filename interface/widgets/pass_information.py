@@ -5,7 +5,7 @@ from PyQt6.QtCore import Qt
 # HELPERS
 from helpers.helpers import *
 
-class InformationPass(QGroupBox):
+class PassInformation(QGroupBox):
   def __init__(self):
     super().__init__()
     self.setTitle("Информация для пропуска")

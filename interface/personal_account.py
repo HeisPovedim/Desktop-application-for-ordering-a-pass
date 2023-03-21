@@ -1,5 +1,6 @@
-from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import Qt
 
 # WINDOW
 from interface.personal_applications import PersonalApplication
@@ -17,6 +18,7 @@ class PersonalAccount(QMainWindow):
     
     # Настройки окна
     self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(600, 400)
     self.setCentralWidget(QWidget())
 

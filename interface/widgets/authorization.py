@@ -1,5 +1,6 @@
 # ВИДЖЕТ - АВТОРИЗАЦИЯ
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QMessageBox, QLineEdit, QPushButton, QLabel
+from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import Qt
 
 # WINDOW
@@ -20,7 +21,8 @@ class Authorization(QMainWindow):
     super().__init__()
 
     # Настройки окна
-    self.setWindowTitle("Авторизация")
+    self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(300, 110)
     self.setCentralWidget(QWidget())
 

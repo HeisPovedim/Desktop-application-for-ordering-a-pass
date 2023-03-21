@@ -1,10 +1,12 @@
-from PyQt6.QtWidgets import QMainWindow, QGridLayout, QWidget , QMessageBox
+from PyQt6.QtWidgets import QWidget, QMainWindow, QGridLayout, QMessageBox
+from PyQt6.QtGui import QIcon
 
 # WIDGETS
-from interface.widgets.information_for_the_pass import InformationPass
+from interface.widgets.pass_information import PassInformation
 from interface.widgets.receiving_party import ReceivingParty
 from interface.widgets.visitor_information import VisitorInformation
 from interface.widgets.attaching_documents import AttachingDocuments
+from interface.widgets.visitor_list import VisitorList
 from interface.widgets.buttons import Buttons
 
 # CONFIGURATIONS
@@ -24,23 +26,25 @@ import hashlib
 import re
 import os
 
-class IndividualVisit(QMainWindow):
+class GroupVisit(QMainWindow):
   def __init__(self, selection_window):
     super().__init__()
 
     # Настройка окна
     self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(1000, 700)
     self.setCentralWidget(QWidget())
 
     # Инициализация окон и виджетов
     self.selection_window = selection_window
-    self.information_for_the_pass = InformationPass()
+    self.pass_information = PassInformation()
     self.receiving_party = ReceivingParty()
-    self.visitor_information = VisitorInformation(True)
+    self.visitor_information = VisitorInformation(False)
     self.attaching_documents = AttachingDocuments()
+    self.visitor_list = VisitorList
     self.buttons = Buttons()
-
+    
     # Настройка базы данных
     self.db = DB()
     self.connect = self.db.connect
@@ -51,16 +55,17 @@ class IndividualVisit(QMainWindow):
     query = f"SELECT id FROM users WHERE login='{self.username}'"
     self.cursor.execute(query)
     self.userId = self.cursor.fetchone()
-
+    
     self.initGUI()
-
+    
   def initGUI(self):
-
+    
     # Конфигурация Grid
     grid = QGridLayout()
-    grid.addWidget(self.information_for_the_pass, 0, 0)
+    grid.addWidget(self.pass_information, 0, 0)
     grid.addWidget(self.receiving_party, 0, 1)
-    grid.addWidget(self.visitor_information, 1, 0, 1, 2)
+    grid.addWidget(self.visitor_information, 1, 0)
+    grid.addWidget(self.visitor_list, 1, 1)
     grid.addWidget(self.attaching_documents, 2, 0)
     grid.addLayout(self.buttons, 2, 1)
 
@@ -70,9 +75,8 @@ class IndividualVisit(QMainWindow):
     grid.setSpacing(5)
     self.centralWidget().setLayout(grid)
 
-  # ОБРАБОТКИ ФОРМЫ
+    # ОБРАБОТКИ ФОРМЫ
   def make_application(self):
-  
     blank_fields = []  # массив, куда мы будем записывать наши не заполненные поля
     form_valid = True  # формат проверки
 
@@ -114,20 +118,22 @@ class IndividualVisit(QMainWindow):
       form_valid = False
     else:
       try:
-        answers = dns.resolver.resolve(domain, 'MX') # получаем MX записи домена
+        answers = dns.resolver.resolve(domain, 'MX')  # получаем MX записи домена
       except dns.resolver.NXDOMAIN:
         blank_fields.append("Email")
         form_valid = False
         answers = 0
-
+  
       # проверяем, есть ли хотя бы один адрес сервера в ответе
       if answers and len(answers) <= 0:
         blank_fields.append("Email")
         form_valid = False
 
-    # Прикрепление фото - пустая строка и ничего не выбрано
-    if self.visitor_information.file_photo is None or self.visitor_information.file_photo == "":
-      self.visitor_information.file_photo = None
+    # Список посетителей - пустая строка и ничего не выбрано
+    if self.visitor_list.file_document is None or self.visitor_list.file_document == "":
+      blank_fields.append("Прикрепите список посетителей")
+      self.visitor_list.file_document = None
+      form_valid = False
 
     # Прикрепление документа - пустая строка и ничего не выбрано
     if self.attaching_documents.file_document is None or self.attaching_documents.file_document == "":
@@ -140,10 +146,11 @@ class IndividualVisit(QMainWindow):
       message = "\n".join(blank_fields)
       QMessageBox.warning(self, "Заполните поля", message)
     elif form_valid:
+      
       # Cохранение документов на компьютере
       if self.attaching_documents.file_document:
         file_path = os.path.join(
-          INDIVIDUAL_VISIT_WINDOW_PDF,
+          GROUP_VISIT_WINDOW_PDF,
           hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".pdf"
         )
         try:
@@ -151,20 +158,37 @@ class IndividualVisit(QMainWindow):
             data = file.read()
           with open(file_path, 'ab') as file:
             file.write(data)
+          print("Файлы успешно сохранены.")
         except Exception as error:
           QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
           return
 
+      # Cохранение списка посетителей на компьютере
+      if self.visitor_list.file_document:
+        file_path = os.path.join(
+          GROUP_VISIT_WINDOW_XLSX,
+          hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest() + ".xlsx"
+        )
+        try:
+          with open(self.visitor_list.file_document, 'rb') as file:
+            data = file.read()
+          with open(file_path, 'ab') as file:
+            file.write(data)
+          print("Файлы успешно сохранены.")
+        except Exception as error:
+          QMessageBox.warning(self, "Ошибка", f"Не удалось сохранить файлы: {error}")
+          return
+  
       # Номер - убираем лишние символы и проверяем длину номера
       phone_valid = ""
       if len(re.sub(r'[^\d+]', '', self.visitor_information.phone.text())) == 12:
         phone_valid = re.sub(r'[^\d+]', '', self.visitor_information.phone.text())
 
       # Последовательное добавление данных в БД
-      addIndividualVisits(
-        self.information_for_the_pass.dateWith.date().toString("yyyy-MM-dd"),
-        self.information_for_the_pass.dateAbout.date().toString("yyyy-MM-dd"),
-        self.information_for_the_pass.comboBox.currentText(),
+      addGroupVisits(
+        self.pass_information.dateWith.date().toString("yyyy-MM-dd"),
+        self.pass_information.dateAbout.date().toString("yyyy-MM-dd"),
+        self.pass_information.comboBox.currentText(),
         self.receiving_party.comboBox.currentText(),
         self.receiving_party.fio.text(),
         self.visitor_information.surname.text(),
@@ -178,13 +202,13 @@ class IndividualVisit(QMainWindow):
         self.visitor_information.series.text(),
         self.visitor_information.number.text(),
         hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
-        self.visitor_information.file_photo,
+        hashlib.sha256((self.username + f'{datetime.now():%Y-%m-%d %H-%M-%S%z}').encode()).hexdigest(),
         f'{datetime.now():%Y-%m-%d %H-%M-%S%z}'
       )
       
       QMessageBox.information(self, "Успех", "Валидация прошла успешно")
-
-  # ВОЗВРАЩЕНИЕ В ГЛАВНОЕ МЕНЮ
+    
   def show_main_window(self):
-    self.close()
+    # показываем главное окно и закрываем новое окно
     self.selection_window.show()
+    self.hide()

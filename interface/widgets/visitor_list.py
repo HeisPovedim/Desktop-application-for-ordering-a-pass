@@ -1,11 +1,11 @@
-# ВИДЖЕТ - ПРИКРЕПЛЯЕМЫЕ ДОКУМЕНТЫ
+# ВИДЖЕТ - СПИСОК ПОСЕТИТЕЛЕЙ
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QGroupBox, QGridLayout, QPushButton, QLabel, QMessageBox, QFileDialog
 
 # LIBRARIES
 import os
 
-class ListOfVisitors(QGroupBox):
+class VisitorList(QGroupBox):
   def __init__(self):
     super().__init__()
     self.setTitle("Список посетителей")

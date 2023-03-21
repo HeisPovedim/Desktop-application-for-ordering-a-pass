@@ -1,6 +1,6 @@
 # ВИДЖЕТ - РЕГИСТРАЦИЯ
-from PyQt6.QtGui import QRegularExpressionValidator
 from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QMessageBox, QLineEdit, QPushButton, QLabel
+from PyQt6.QtGui import QRegularExpressionValidator, QIcon
 from PyQt6.QtCore import Qt, QRegularExpression
 
 # HELPERS
@@ -18,7 +18,8 @@ class Registrations(QMainWindow):
     super().__init__()
 
     # Настройки окна
-    self.setWindowTitle("Регистрация")
+    self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(300, 160)
     self.setCentralWidget(QWidget())
 

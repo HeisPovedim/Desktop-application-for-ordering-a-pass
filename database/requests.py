@@ -2,7 +2,7 @@ from database.connect import DB
 from data.user import user
 
 # ДОБАВЛЕНИЕ ИНДИВИДУАЛЬНОЙ ЗАЯВКИ В БД
-def addIndividualVisits(
+def addPersonalVisit(
     date_with, date_about, purpose,
     division, FIO,
     surname, name, patronymic, phone, email, organization, note, birthdate, passport_series, passport_number,
@@ -12,18 +12,16 @@ def addIndividualVisits(
   db = DB()
   cursor = db.cursor_dictionary
   
-  username = user['username']
-  query = f"SELECT id FROM users WHERE login='{username}'"
-  cursor.execute(query)
+  cursor.execute(f"SELECT id FROM users WHERE login='{user['username']}'")
   userId = cursor.fetchone()
   
-  # information_for_the_pass
+  # pass_information
   sql = """
-  INSERT INTO information_for_the_pass
+  INSERT INTO pass_information
   (
-    validity_period_from,
-    validity_period_for,
-    purpose_of_the_visit
+    date_from,
+    date_by,
+    visit_purpose
   ) VALUES (%s,%s,%s)"""
   val = (
     date_with,
@@ -31,7 +29,7 @@ def addIndividualVisits(
     purpose
   )
   cursor.execute(sql,val)
-  information_for_the_pass_id = cursor.lastrowid
+  pass_information_id = cursor.lastrowid
 
 
   # receiving_party
@@ -74,7 +72,7 @@ def addIndividualVisits(
   
   # documents
   sql = """
-  INSERT INTO documents_personal (pdf, photo) VALUES (%s,%s)"""
+  INSERT INTO documents_personal (document, photo) VALUES (%s,%s)"""
   val = (document,photo)
   cursor.execute(sql, val)
   documents_id = cursor.lastrowid
@@ -83,23 +81,21 @@ def addIndividualVisits(
   INSERT INTO personal_visit
   (
     users_id,
-    information_for_the_pass_id,
+    pass_information_id,
     receiving_party_id,
     visitor_information_id,
     documents_id,
     creation_time,
-    status,
-    reason
-  ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
+    status
+  ) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
   val = (
     userId["id"],
-    information_for_the_pass_id,
+    pass_information_id,
     receiving_party_id,
     visitor_information_id,
     documents_id,
     current_date,
-    "checked",
-    "no comment"
+    "checked"
   )
   cursor.execute(sql, val)
   db.commit()
@@ -115,18 +111,16 @@ def addGroupVisits(
   db = DB()
   cursor = db.cursor_dictionary
   
-  username = user['username']
-  query = f"SELECT id FROM users WHERE login='{username}'"
-  cursor.execute(query)
+  cursor.execute(f"SELECT id FROM users WHERE login='{user['username']}'")
   userId = cursor.fetchone()
   
-  # information_for_the_pass
+  # pass_information
   sql = """
-  INSERT INTO information_for_the_pass
+  INSERT INTO pass_information
   (
-    validity_period_from,
-    validity_period_for,
-    purpose_of_the_visit
+    date_from,
+    date_by,
+    visit_purpose
   ) VALUES (%s,%s,%s)"""
   val = (
     date_with,
@@ -134,7 +128,7 @@ def addGroupVisits(
     purpose
   )
   cursor.execute(sql, val)
-  information_for_the_pass_id = cursor.lastrowid
+  pass_information_id = cursor.lastrowid
   
   # receiving_party
   sql = "INSERT INTO receiving_party (division, FIO) VALUES (%s,%s)"
@@ -173,8 +167,7 @@ def addGroupVisits(
   visitor_information_id = cursor.lastrowid
   
   # documents
-  sql = """
-  INSERT INTO documents_group (pdf, list_visitors) VALUES (%s,%s)"""
+  sql = "INSERT INTO documents_group (document, visitor_list) VALUES (%s,%s)"
   val = (document, xlsx)
   cursor.execute(sql, val)
   documents_id = cursor.lastrowid
@@ -183,23 +176,21 @@ def addGroupVisits(
   INSERT INTO group_visit
   (
     users_id,
-    information_for_the_pass_id,
+    pass_information_id,
     receiving_party_id,
     visitor_information_id,
     documents_id,
     creation_time,
-    status,
-    reason
-  ) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
+    status
+  ) VALUES (%s,%s,%s,%s,%s,%s,%s)"""
   val = (
     userId["id"],
-    information_for_the_pass_id,
+    pass_information_id,
     receiving_party_id,
     visitor_information_id,
     documents_id,
     current_date,
-    "checked",
-    "no comment"
+    "checked"
   )
   cursor.execute(sql, val)
   db.commit()
@@ -209,9 +200,7 @@ def getting_user_information():
   db = DB()
   cursor = db.cursor_dictionary
   
-  username = user['username']
-  
-  cursor.execute(f"SELECT id, email, login FROM users WHERE login='{username}'")
+  cursor.execute(f"SELECT id, email, login FROM users WHERE login='{user['username']}'")
   return cursor.fetchone()
 
 # ПОЛУЧЕНИЕ ПЕРСОНАЛЬНЫХ ЗАЯВОК
@@ -219,9 +208,7 @@ def getting_personal_applications():
   db = DB()
   cursor = db.cursor_dictionary
 
-  username = user['username']
-  query = f"SELECT id FROM users WHERE login='{username}'"
-  cursor.execute(query)
+  cursor.execute(f"SELECT id FROM users WHERE login='{user['username']}'")
   userId = cursor.fetchone()
   
   sql = f"""
@@ -246,9 +233,7 @@ def getting_group_applications():
   db = DB()
   cursor = db.cursor_dictionary
   
-  username = user['username']
-  query = f"SELECT id FROM users WHERE login='{username}'"
-  cursor.execute(query)
+  cursor.execute(f"SELECT id FROM users WHERE login='{user['username']}'")
   userId = cursor.fetchone()
   
   sql = f"""

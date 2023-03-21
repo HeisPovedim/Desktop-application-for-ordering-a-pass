@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import (
-  QMainWindow, QWidget, QGridLayout, QHBoxLayout, QPushButton, QLabel,
-  QTableWidget, QTableWidgetItem, QScrollArea, QHeaderView
+  QMainWindow, QWidget, QGridLayout, QPushButton,
+  QTableWidget, QTableWidgetItem
 )
+from PyQt6.QtGui import QIcon
 
 # DATABASE
 from database.requests import *
@@ -16,6 +17,7 @@ class GroupApplication(QMainWindow):
     
     # Настройки окна
     self.setWindowTitle("IDVisitor")
+    self.setWindowIcon(QIcon('./assets/img/icon.png'))
     self.setFixedSize(600, 400)
     self.setCentralWidget(QWidget())
     
