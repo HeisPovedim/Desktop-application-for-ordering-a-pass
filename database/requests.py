@@ -208,15 +208,11 @@ def addGroupVisits(
   db.commit()
   
 def getting_user_information():
-  info_user = []
   
   db = DB()
-  cursor = db.cursor
+  cursor = db.cursor_dictionary
   
   username = user['username']
   
   cursor.execute(f"SELECT id, email, login FROM users WHERE login='{username}'")
-  result = cursor.fetchall()
-  for row in result:
-    info_user.append(row)
-  return  info_user
+  return cursor.fetchall()
