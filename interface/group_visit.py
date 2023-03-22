@@ -42,7 +42,7 @@ class GroupVisit(QMainWindow):
     self.receiving_party = ReceivingParty()
     self.visitor_information = VisitorInformation(False)
     self.attaching_documents = AttachingDocuments()
-    self.visitor_list = VisitorList
+    self.visitor_list = VisitorList()
     self.buttons = Buttons()
     
     # Настройка базы данных
